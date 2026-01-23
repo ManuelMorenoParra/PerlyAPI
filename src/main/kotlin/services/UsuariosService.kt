@@ -51,17 +51,19 @@ object UsuariosService {
     }
 
     /**
-     * Obtiene un usuario por su email.
+     * Valida las credenciales de un usuario.
      */
-    fun obtenerPorEmail(email: String): UsuarioDTO? {
-        return UsuariosDAO.buscarPorEmail(email)
+    fun buscarPorEmail(email: String): UsuarioDTO? {
+        val usuario = UsuariosDAO.seleccionarPorEmail(email)
+        // Comparamos el email y la contraseña antes de dar el OK
+        return if (usuario != null) usuario else null
     }
 
     /**
-     * Lógica básica de login.
+     * Login
      */
-    fun login(email: String, password: String): Boolean {
-        val usuario = UsuariosDAO.buscarPorEmail(email)
-        return usuario?.password == password
+    fun login(email: String, pass: String): Boolean {
+        val usuario = UsuariosDAO.seleccionarPorEmail(email)
+        return usuario != null && usuario.password == pass
     }
 }

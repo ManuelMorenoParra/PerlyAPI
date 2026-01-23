@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object ConexionDB {
 
-    private const val HOST = "192.168.56.101"
+    private const val HOST = "192.168.3.155"
     private const val PORT = 3306
     private const val DATABASE = "proyecto"
     private const val USER = "dam"

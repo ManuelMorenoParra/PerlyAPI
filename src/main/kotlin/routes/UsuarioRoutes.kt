@@ -3,14 +3,39 @@ package edu.gva.es.routes
 import edu.gva.es.services.UsuariosService
 import edu.gva.es.domain.UsuarioDTO
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.sessions
+import io.ktor.server.sessions.*
+import edu.gva.es.domain.UserSession
+import edu.gva.es.domain.LoginRequest
 
 fun Route.usuarioRouting() {
 
     val service = UsuariosService
+
+    // Bloque de autenticación
+    route("/auth") {
+
+        // Login
+        post("/login") {
+            val login = call.receive<LoginRequest>()
+            val correcto = service.login(login.email, login.password)
+            if (correcto) {
+                call.sessions.set(UserSession(email = login.email))
+                call.respondText("Login exitoso")
+            } else {
+                call.respond(HttpStatusCode.Unauthorized, "Credenciales incorrectas")
+            }
+        }
+
+        // Logout
+        get("/logout") {
+            call.sessions.clear<UserSession>()
+            call.respondText("Sesión cerrada correctamente.")
+        }
+    }
 
     route("/usuarios") {
 
@@ -88,7 +113,7 @@ fun Route.usuarioRouting() {
             val email = call.parameters["email"]
                 ?: return@get call.respondText("Falta email", status = HttpStatusCode.BadRequest)
 
-            val usuario = service.obtenerPorEmail(email)
+            val usuario = service.buscarPorEmail(email)
 
             if (usuario != null) {
                 call.respond(usuario)

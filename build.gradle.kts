@@ -17,6 +17,7 @@ application {
 dependencies {
 
     val exposedVersion = "0.52.0"
+    val ktor_version: String by project
 
     // KTOR
     implementation("io.ktor:ktor-server-core")
@@ -24,7 +25,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
     implementation("io.ktor:ktor-server-config-yaml")
-    implementation("io.ktor:ktor-server-cors") // ✅ ASÍ
+    implementation("io.ktor:ktor-server-cors")
     implementation("io.ktor:ktor-server-auth")
 
     // LOGGING
@@ -41,6 +42,10 @@ dependencies {
 
     testImplementation("io.ktor:ktor-server-tests-jvm:3.3.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.2.21")
+
+    // Módulos de seguridad necesarios
+    implementation("io.ktor:ktor-server-auth-jvm:${ktor_version}")
+    implementation("io.ktor:ktor-server-sessions-jvm:${ktor_version}")
 }
 
 

@@ -1,15 +1,15 @@
 package edu.gva.es.data
 
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.javatime.date
 
 object Usuarios : Table("usuarios") {
-    val id: Column<Int> = integer("id").autoIncrement()
-    val nombre: Column<String> = varchar("nombre", 50)
-    val email: Column<String> = varchar("email", 100).uniqueIndex()
-    val password: Column<String> = varchar("password", 255)
-    val fechaNacimiento: Column<java.time.LocalDate> = date("fecha_nacimiento")
 
-    override val primaryKey = PrimaryKey(id)
+    val idUsuario = integer("id_usuario").autoIncrement()
+    val nombre = varchar("nombre", 50)
+    val email = varchar("email", 100).uniqueIndex()
+    val password = varchar("password", 255)
+    val fechaNacimiento = date("fecha_nacimiento").nullable()
+
+    override val primaryKey = PrimaryKey(idUsuario)
 }

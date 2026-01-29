@@ -11,41 +11,27 @@ group = "edu.gva.es"
 version = "0.0.1"
 
 application {
-    mainClass = "io.ktor.server.netty.EngineMain"
+    mainClass.set("edu.gva.es.ApplicationKt")
 }
 
 dependencies {
-
     val exposedVersion = "0.52.0"
-    val ktor_version: String by project
 
-    // KTOR
-    implementation("io.ktor:ktor-server-core")
-    implementation("io.ktor:ktor-server-netty")
-    implementation("io.ktor:ktor-server-content-negotiation")
-    implementation("io.ktor:ktor-serialization-kotlinx-json")
-    implementation("io.ktor:ktor-server-config-yaml")
-    implementation("io.ktor:ktor-server-cors")
-    implementation("io.ktor:ktor-server-auth")
+    implementation("io.ktor:ktor-server-core:3.3.2")
+    implementation("io.ktor:ktor-server-netty:3.3.2")
+    implementation("io.ktor:ktor-server-content-negotiation:3.3.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.2")
+    implementation("io.ktor:ktor-server-cors:3.3.2")
+    implementation("io.ktor:ktor-server-auth:3.3.2")
 
-    // LOGGING
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("ch.qos.logback:logback-classic:1.5.6")
 
-    // EXPOSED
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
 
-    // MYSQL
     implementation("mysql:mysql-connector-java:8.0.29")
-
-    testImplementation("io.ktor:ktor-server-tests-jvm:3.3.2")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.2.21")
-
-    // Módulos de seguridad necesarios
-    implementation("io.ktor:ktor-server-auth-jvm:${ktor_version}")
-    implementation("io.ktor:ktor-server-sessions-jvm:${ktor_version}")
 }
 
 

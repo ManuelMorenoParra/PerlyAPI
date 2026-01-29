@@ -8,24 +8,24 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object UsuariosDAO {
 
     private fun ResultRow.toUsuarioDTO() = UsuarioDTO(
-        id = this[Usuarios.id],
+        id = this[Usuarios.idUsuario],
         nombre = this[Usuarios.nombre],
         email = this[Usuarios.email],
         password = this[Usuarios.password],
         fechaNacimiento = this[Usuarios.fechaNacimiento]
     )
 
-    fun insertar(u: UsuarioDTO) = transaction {
+    fun insertar(u: UsuarioDTO): Int = transaction {
         Usuarios.insert {
             it[nombre] = u.nombre
             it[email] = u.email
             it[password] = u.password
             it[fechaNacimiento] = u.fechaNacimiento
-        } get Usuarios.id
+        } get Usuarios.idUsuario
     }
 
-    fun actualizar(id: Int, u: UsuarioDTO) = transaction {
-        Usuarios.update({ Usuarios.id eq id }) {
+    fun actualizar(id: Int, u: UsuarioDTO): Int = transaction {
+        Usuarios.update({ Usuarios.idUsuario eq id }) {
             it[nombre] = u.nombre
             it[email] = u.email
             it[password] = u.password
@@ -33,19 +33,18 @@ object UsuariosDAO {
         }
     }
 
-    fun seleccionarTodos() = transaction {
+    fun seleccionarTodos(): List<UsuarioDTO> = transaction {
         Usuarios.selectAll().map { it.toUsuarioDTO() }
     }
 
-    fun seleccionarPorId(id: Int) = transaction {
-        Usuarios.selectAll()
-            .where { Usuarios.id eq id }
+    fun seleccionarPorId(id: Int): UsuarioDTO? = transaction {
+        Usuarios.select { Usuarios.idUsuario eq id }
             .map { it.toUsuarioDTO() }
             .singleOrNull()
     }
 
-    fun eliminar(id: Int) = transaction {
-        Usuarios.deleteWhere { Usuarios.id eq id }
+    fun eliminar(id: Int): Int = transaction {
+        Usuarios.deleteWhere { Usuarios.idUsuario eq id }
     }
 
     fun seleccionarPorEmail(email: String): UsuarioDTO? = transaction {

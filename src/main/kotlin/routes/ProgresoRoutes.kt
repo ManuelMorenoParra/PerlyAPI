@@ -31,7 +31,9 @@ fun Route.progresoRouting() {
                 val id = service.registrarProgreso(progreso)
                 call.respond(HttpStatusCode.Created, mapOf("id" to id))
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, e.message ?: "")
+                // Esto te imprimirá el error real en la consola de IntelliJ
+                println("Error en POST /progreso: ${e.message}")
+                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido")
             }
         }
 

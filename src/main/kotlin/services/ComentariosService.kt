@@ -1,18 +1,16 @@
 package services
 
-import data.ComentariosDAO
+import edu.gva.es.data.ComentariosDAO
 import domain.ComentarioDTO
 
 class ComentariosService {
 
-    private val dao = ComentariosDAO()
-
     fun getComentariosDePublicacion(idPublicacion: Int) =
-        dao.getByPublicacion(idPublicacion)
+        ComentariosDAO.getByPublicacion(idPublicacion)
 
     fun crearComentario(comentario: ComentarioDTO) =
-        dao.insert(comentario)
+        ComentariosDAO.insert(comentario)
 
     fun eliminarComentario(id: Int) =
-        dao.delete(id)
+        ComentariosDAO.delete(id)
 }

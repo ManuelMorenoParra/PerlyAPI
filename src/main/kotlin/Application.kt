@@ -5,13 +5,16 @@ import edu.gva.es.plugins.configureRouting
 import edu.gva.es.plugins.configureSecurity
 import edu.gva.es.plugins.configureSerialization
 import io.ktor.server.application.Application
-import io.ktor.server.netty.EngineMain
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 
-fun main(args: Array<String>) {
+fun main() {
     println("Iniciando conexión con la base de datos...")
     ConexionDB.conectar()
 
-    EngineMain.main(args)
+    embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
+        module()
+    }.start(wait = true)
 }
 
 fun Application.module() {

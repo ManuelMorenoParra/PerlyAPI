@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class PublicacionDTO(
     val id: Int? = null,
     val idUsuario: Int,
-    val contenido: String,
+    val texto: String,
     val fecha: String? = null
 )

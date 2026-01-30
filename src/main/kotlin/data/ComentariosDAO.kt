@@ -1,35 +1,38 @@
-package data
+package edu.gva.es.data
 
-import domain.ComentarioDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import domain.ComentarioDTO
+import java.time.LocalDateTime
 
-class ComentariosDAO {
+object ComentariosDAO {
 
-    fun getByPublicacion(idPublicacion: Int): List<ComentarioDTO> = transaction {
-        Comentarios.select { Comentarios.idPublicacion eq idPublicacion }
-            .map {
-                ComentarioDTO(
-                    id = it[Comentarios.id],
-                    idPublicacion = it[Comentarios.idPublicacion],
-                    idUsuario = it[Comentarios.idUsuario],
-                    texto = it[Comentarios.texto],
-                    fecha = it[Comentarios.fecha]
-                )
-            }
+    private fun ResultRow.toDTO() = ComentarioDTO(
+        id = this[Comentarios.idComentario],
+        idPublicacion = this[Comentarios.idPublicacion],
+        idUsuario = this[Comentarios.idUsuario],
+        texto = this[Comentarios.texto],
+        fecha = this[Comentarios.fecha].toString()
+    )
+
+    fun getByPublicacion(idPub: Int): List<ComentarioDTO> = transaction {
+        Comentarios
+            .select { Comentarios.idPublicacion eq idPub }
+            .map { it.toDTO() }
     }
 
-    fun insert(comentario: ComentarioDTO): Int = transaction {
+    fun insert(c: ComentarioDTO): Int = transaction {
         Comentarios.insert {
-            it[idPublicacion] = comentario.idPublicacion
-            it[idUsuario] = comentario.idUsuario
-            it[texto] = comentario.texto
-            it[fecha] = java.time.LocalDateTime.now().toString()
-        } get Comentarios.id
+            it[idPublicacion] = c.idPublicacion
+            it[idUsuario] = c.idUsuario
+            it[texto] = c.texto
+            it[fecha] = LocalDateTime.now()
+        } get Comentarios.idComentario
     }
 
     fun delete(id: Int): Boolean = transaction {
-        Comentarios.deleteWhere { Comentarios.id eq id } > 0
+        Comentarios.deleteWhere { Comentarios.idComentario eq id } > 0
     }
 }
+

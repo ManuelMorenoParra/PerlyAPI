@@ -5,12 +5,26 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class RetosDAO {
+object RetosDAO {
 
-    fun getAll(): List<RetoDTO> = transaction {
+    // Insertar un nuevo reto y devolver el DTO con id generado
+    fun crearReto(reto: RetoDTO): RetoDTO {
+        var idGenerado: Int? = null
+        transaction {
+            idGenerado = Retos.insert {
+                it[titulo] = reto.titulo
+                it[descripcion] = reto.descripcion
+                it[puntos] = reto.puntos
+            }[Retos.id_reto]
+        }
+        return reto.copy(id = idGenerado)
+    }
+
+    // Obtener todos los retos
+    fun obtenerTodos(): List<RetoDTO> = transaction {
         Retos.selectAll().map {
             RetoDTO(
-                id = it[Retos.id],
+                id = it[Retos.id_reto],
                 titulo = it[Retos.titulo],
                 descripcion = it[Retos.descripcion],
                 puntos = it[Retos.puntos]
@@ -18,35 +32,33 @@ class RetosDAO {
         }
     }
 
-    fun getById(id: Int): RetoDTO? = transaction {
-        Retos.select { Retos.id eq id }
+    // Obtener un reto por id
+    fun obtenerPorId(id: Int): RetoDTO? = transaction {
+        Retos.select { Retos.id_reto eq id }
             .map {
                 RetoDTO(
-                    id = it[Retos.id],
+                    id = it[Retos.id_reto],
                     titulo = it[Retos.titulo],
                     descripcion = it[Retos.descripcion],
                     puntos = it[Retos.puntos]
                 )
-            }.singleOrNull()
+            }
+            .singleOrNull()
     }
 
-    fun insert(reto: RetoDTO): Int = transaction {
-        Retos.insert {
+    // Actualizar un reto
+    fun actualizarReto(reto: RetoDTO): Boolean = transaction {
+        val updated = Retos.update({ Retos.id_reto eq (reto.id ?: 0) }) {
             it[titulo] = reto.titulo
             it[descripcion] = reto.descripcion
             it[puntos] = reto.puntos
-        } get Retos.id
+        }
+        updated > 0
     }
 
-    fun update(id: Int, reto: RetoDTO): Boolean = transaction {
-        Retos.update({ Retos.id eq id }) {
-            it[titulo] = reto.titulo
-            it[descripcion] = reto.descripcion
-            it[puntos] = reto.puntos
-        } > 0
-    }
-
-    fun delete(id: Int): Boolean = transaction {
-        Retos.deleteWhere { Retos.id eq id } > 0
+    // Eliminar un reto por id
+    fun eliminarReto(id: Int): Boolean = transaction {
+        val deleted = Retos.deleteWhere { Retos.id_reto eq id }
+        deleted > 0
     }
 }

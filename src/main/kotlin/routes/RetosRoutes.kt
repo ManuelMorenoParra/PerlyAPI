@@ -1,21 +1,20 @@
 package routes
 
-import domain.RetoDTO
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import io.ktor.server.request.*
+import io.ktor.http.*
 import services.RetosService
+import domain.RetoDTO
 
 fun Route.retosRouting() {
-
-    val service = RetosService()
 
     route("/retos") {
 
         get {
-            call.respond(service.getAllRetos())
+            val retos = RetosService.getAllRetos()
+            call.respond(retos)
         }
 
         get("{id}") {
@@ -25,17 +24,19 @@ fun Route.retosRouting() {
                 return@get
             }
 
-            val reto = service.getRetoById(id)
-            if (reto != null)
-                call.respond(reto)
-            else
+            val reto = RetosService.getRetoById(id)
+            if (reto == null) {
                 call.respond(HttpStatusCode.NotFound, "Reto no encontrado")
+                return@get
+            }
+
+            call.respond(reto)
         }
 
         post {
-            val reto = call.receive<RetoDTO>()
-            val id = service.createReto(reto)
-            call.respond(HttpStatusCode.Created, mapOf("id" to id))
+            val request = call.receive<RetoDTO>()
+            val nuevoReto = RetosService.createReto(request)
+            call.respond(HttpStatusCode.Created, nuevoReto)
         }
 
         put("{id}") {
@@ -45,13 +46,14 @@ fun Route.retosRouting() {
                 return@put
             }
 
-            val reto = call.receive<RetoDTO>()
-            val actualizado = service.updateReto(id, reto)
+            val request = call.receive<RetoDTO>()
+            val updated = RetosService.updateReto(id, request)
+            if (!updated) {
+                call.respond(HttpStatusCode.NotFound, "Reto no encontrado")
+                return@put
+            }
 
-            if (actualizado)
-                call.respond(HttpStatusCode.OK)
-            else
-                call.respond(HttpStatusCode.NotFound)
+            call.respond(HttpStatusCode.OK, "Reto actualizado")
         }
 
         delete("{id}") {
@@ -61,12 +63,13 @@ fun Route.retosRouting() {
                 return@delete
             }
 
-            val eliminado = service.deleteReto(id)
+            val deleted = RetosService.deleteReto(id)
+            if (!deleted) {
+                call.respond(HttpStatusCode.NotFound, "Reto no encontrado")
+                return@delete
+            }
 
-            if (eliminado)
-                call.respond(HttpStatusCode.OK)
-            else
-                call.respond(HttpStatusCode.NotFound)
+            call.respond(HttpStatusCode.OK, "Reto eliminado")
         }
     }
 }

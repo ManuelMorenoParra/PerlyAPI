@@ -4,6 +4,7 @@ import domain.MensajeDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.time.LocalDateTime
 
 class MensajesDAO {
 
@@ -17,7 +18,7 @@ class MensajesDAO {
                 idEmisor = it[Mensajes.idEmisor],
                 idReceptor = it[Mensajes.idReceptor],
                 mensaje = it[Mensajes.mensaje],
-                fecha = it[Mensajes.fecha],
+                fecha = it[Mensajes.fecha].toString(),
                 leido = it[Mensajes.leido]
             )
         }
@@ -28,7 +29,7 @@ class MensajesDAO {
             it[idEmisor] = mensaje.idEmisor
             it[idReceptor] = mensaje.idReceptor
             it[this.mensaje] = mensaje.mensaje
-            it[fecha] = java.time.LocalDateTime.now().toString()
+            it[fecha] = LocalDateTime.now()
             it[leido] = false
         } get Mensajes.id
     }

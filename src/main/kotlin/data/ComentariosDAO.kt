@@ -34,5 +34,11 @@ object ComentariosDAO {
     fun delete(id: Int): Boolean = transaction {
         Comentarios.deleteWhere { Comentarios.idComentario eq id } > 0
     }
+
+    fun update(id: Int, dto: ComentarioDTO): Int = transaction {
+        Comentarios.update({ Comentarios.idComentario eq id }) {
+            it[texto] = dto.texto // Asegúrate de que tu DTO tenga la propiedad 'texto'
+        }
+    }
 }
 

@@ -2,13 +2,15 @@ package data
 
 import domain.ProgresoDTO
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq // Importante para deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
 
 class ProgresoDAO {
 
     fun getByUsuario(idUsuario: Int): List<ProgresoDTO> = transaction {
-        Progreso.select { Progreso.idUsuario eq idUsuario }
+        Progreso.selectAll() // Cambiado select por selectAll().where en versiones nuevas de Exposed
+            .where { Progreso.idUsuario eq idUsuario }
             .map {
                 ProgresoDTO(
                     id = it[Progreso.id],
@@ -26,22 +28,26 @@ class ProgresoDAO {
             it[idUsuario] = progreso.idUsuario
             it[idReto] = progreso.idReto
             it[puntosGanados] = progreso.puntosGanados
-            it[fecha] = LocalDate.now() // LocalDate para tipo "date" de SQL
+            it[fecha] = LocalDate.now()
             it[completado] = progreso.completado
         } get Progreso.id
     }
 
     fun yaCompletado(idUsuario: Int, idReto: Int): Boolean = transaction {
-        Progreso.select {
-            (Progreso.idUsuario eq idUsuario) and
-                    (Progreso.idReto eq idReto)
-        }.count() > 0
+        Progreso.selectAll()
+            .where { (Progreso.idUsuario eq idUsuario) and (Progreso.idReto eq idReto) }
+            .count() > 0
     }
 
     fun totalPuntosUsuario(idUsuario: Int): Int = transaction {
         Progreso.slice(Progreso.puntosGanados.sum())
-            .select { Progreso.idUsuario eq idUsuario }
+            .selectAll()
+            .where { Progreso.idUsuario eq idUsuario }
             .map { it[Progreso.puntosGanados.sum()] ?: 0 }
             .first()
+    }
+
+    fun delete(idProgreso: Int): Int = transaction {
+        Progreso.deleteWhere { Progreso.id eq idProgreso }
     }
 }

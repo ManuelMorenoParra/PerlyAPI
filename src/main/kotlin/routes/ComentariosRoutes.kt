@@ -44,5 +44,22 @@ fun Route.comentariosRouting() {
             else
                 call.respond(HttpStatusCode.NotFound)
         }
+
+        put("/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "ID no válido")
+                return@put
+            }
+
+            val dto = call.receive<ComentarioDTO>()
+            val actualizado = service.actualizarComentario(id, dto)
+
+            if (actualizado) {
+                call.respond(HttpStatusCode.OK, "Comentario actualizado")
+            } else {
+                call.respond(HttpStatusCode.NotFound, "No existe el comentario")
+            }
+        }
     }
 }

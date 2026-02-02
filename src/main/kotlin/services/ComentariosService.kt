@@ -13,4 +13,9 @@ class ComentariosService {
 
     fun eliminarComentario(id: Int) =
         ComentariosDAO.delete(id)
+
+    fun actualizarComentario(id: Int, comentario: ComentarioDTO): Boolean {
+        val filasActualizadas = ComentariosDAO.update(id, comentario)
+        return filasActualizadas > 0
+    }
 }

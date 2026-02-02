@@ -12,7 +12,7 @@ fun Route.progresoRouting() {
 
     val service = ProgresoService()
 
-    route("/progreso") {
+    route("/progresos") {
 
         get("{idUsuario}") {
             val id = call.parameters["idUsuario"]?.toIntOrNull()
@@ -47,6 +47,29 @@ fun Route.progresoRouting() {
 
             val puntos = service.obtenerPuntosTotales(id)
             call.respond(mapOf("puntosTotales" to puntos))
+        }
+
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "ID de progreso inválido")
+                return@delete
+            }
+
+            try {
+                // Asegúrate de que tu ProgresoService tenga una función delete(id: Int)
+                val eliminado = service.eliminarProgreso(id)
+
+                if (eliminado) {
+                    call.respond(HttpStatusCode.OK, "Progreso eliminado correctamente")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "No se encontró el progreso con ID $id")
+                }
+            } catch (e: Exception) {
+                println("Error al eliminar progreso: ${e.message}")
+                call.respond(HttpStatusCode.InternalServerError, "Error en el servidor: ${e.message}")
+            }
         }
     }
 }

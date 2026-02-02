@@ -1,67 +1,58 @@
 package edu.gva.es.services
 
-import edu.gva.es.data.UsuariosDAO
+import data.Mensajes
+import data.Publicaciones
+import edu.gva.es.data.*
 import edu.gva.es.domain.UsuarioDTO
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.or
 
-/**
- * Capa de Servicio: Aquí reside la lógica de negocio.
- * Se encarga de validar datos y coordinar las llamadas al DAO.
- */
 object UsuariosService {
 
-    /**
-     * Obtiene todos los usuarios.
-     */
-    fun listarUsuarios(): List<UsuarioDTO> {
-        return UsuariosDAO.seleccionarTodos()
-    }
+    fun listarUsuarios(): List<UsuarioDTO> = UsuariosDAO.seleccionarTodos()
 
-    /**
-     * Busca un usuario por ID.
-     */
-    fun buscarPorId(id: Int): UsuarioDTO? {
-        return UsuariosDAO.seleccionarPorId(id)
-    }
+    fun buscarPorId(id: Int): UsuarioDTO? = UsuariosDAO.seleccionarPorId(id)
 
-    /**
-     * Lógica para crear un usuario.
-     * Se verifica que no exista ya un usuario con el mismo email.
-     */
     fun registrarUsuario(usuario: UsuarioDTO): Int {
-
-        val existe = UsuariosDAO.seleccionarTodos().any { it.email == usuario.email }
-
+        val existe = UsuariosDAO.seleccionarPorEmail(usuario.email) != null
         if (existe) return -1
-
         return UsuariosDAO.insertar(usuario)
     }
 
-    /**
-     * Actualiza un usuario existente.
-     */
-    fun actualizarUsuario(id: Int, usuario: UsuarioDTO): Int {
-        return UsuariosDAO.actualizar(id, usuario)
-    }
+    fun actualizarUsuario(id: Int, usuario: UsuarioDTO): Int = UsuariosDAO.actualizar(id, usuario)
+
+    fun eliminar(id: Int): Int = UsuariosDAO.eliminar(id)
 
     /**
-     * Elimina un usuario.
+     * LIMPIEZA TOTAL: Borra al usuario y sus dependencias.
+     * Ahora incluye Publicaciones para evitar el error de Foreign Key.
      */
-    fun borrarUsuario(id: Int): Int {
-        return UsuariosDAO.eliminar(id)
+    fun eliminarUsuarioCompleto(idUsuarioParam: Int) {
+        transaction {
+            // 1. Borrar lo que depende de Publicaciones (si tuvieras Comentarios o Likes de posts, irían aquí)
+
+            // 2. Borrar Publicaciones (El culpable del error 500)
+            Publicaciones.deleteWhere { Publicaciones.idUsuario eq idUsuarioParam }
+
+            // 3. Borrar el resto de rastro del usuario
+            Soportes.deleteWhere { Soportes.idUsuario eq idUsuarioParam }
+            Likes.deleteWhere { Likes.idUsuario eq idUsuarioParam }
+
+            // 4. Borrar Mensajes (emisor o receptor)
+            Mensajes.deleteWhere { (Mensajes.idEmisor eq idUsuarioParam) or (Mensajes.idReceptor eq idUsuarioParam) }
+
+            // 5. Borrar Seguidores (seguidor o seguido)
+            Seguidores.deleteWhere { (Seguidores.idUsuario eq idUsuarioParam) or (Seguidores.idSeguido eq idUsuarioParam) }
+
+            // 6. Finalmente, borrar al Usuario
+            Usuarios.deleteWhere { Usuarios.idUsuario eq idUsuarioParam }
+        }
     }
 
-    /**
-     * Valida las credenciales de un usuario.
-     */
-    fun buscarPorEmail(email: String): UsuarioDTO? {
-        val usuario = UsuariosDAO.seleccionarPorEmail(email)
-        // Comparamos el email y la contraseña antes de dar el OK
-        return if (usuario != null) usuario else null
-    }
+    fun buscarPorEmail(email: String): UsuarioDTO? = UsuariosDAO.seleccionarPorEmail(email)
 
-    /**
-     * Login
-     */
     fun login(email: String, pass: String): Boolean {
         val usuario = UsuariosDAO.seleccionarPorEmail(email)
         return usuario != null && usuario.password == pass

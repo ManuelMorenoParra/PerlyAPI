@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 @Serializable
 data class LikeDTO(
     val id: Int? = null,
-    val idUsuario: Int,
-    val idPublicacion: Int,
-    val fecha: String
+    val idUsuario: Int = 0,
+    val idPublicacion: Int = 0,
+    val fecha: String? = null
 )

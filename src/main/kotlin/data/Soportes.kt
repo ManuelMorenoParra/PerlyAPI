@@ -3,7 +3,7 @@ package edu.gva.es.data
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
 
-object Soporte : Table("soporte") {
+object Soportes : Table("soporte") {
     val id = integer("id_ticket").autoIncrement()
     val idUsuario = integer("id_usuario")
     val asunto = varchar("asunto", 100)

@@ -5,10 +5,10 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
-object SoporteDAO {
+object SoportesDAO {
 
     fun crear(dto: SoporteDTO) = transaction {
-        Soporte.insert {
+        Soportes.insert {
             it[idUsuario] = dto.idUsuario
             it[asunto] = dto.asunto
             it[descripcion] = dto.descripcion
@@ -18,16 +18,16 @@ object SoporteDAO {
     }
 
     fun responder(id: Int, respuesta: String) = transaction {
-        Soporte.update({ Soporte.id eq id }) {
-            it[Soporte.respuesta] = respuesta
+        Soportes.update({ Soportes.id eq id }) {
+            it[Soportes.respuesta] = respuesta
             it[estado] = "CERRADO"
             it[fechaRespuesta] = LocalDateTime.now()
         }
     }
 
     fun listarPorUsuario(idUsuario: Int) = transaction {
-        Soporte.selectAll()
-            .where { Soporte.idUsuario eq idUsuario }
-            .map { it[Soporte.asunto] }
+        Soportes.selectAll()
+            .where { Soportes.idUsuario eq idUsuario }
+            .map { it[Soportes.asunto] }
     }
 }

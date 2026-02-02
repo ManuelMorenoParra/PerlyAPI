@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.LocalDateTime
+import org.jetbrains.exposed.sql.update
 
 class MensajesDAO {
 
@@ -42,5 +43,13 @@ class MensajesDAO {
 
     fun delete(id: Int): Boolean = transaction {
         Mensajes.deleteWhere { Mensajes.id eq id } > 0
+    }
+
+    fun update(id: Int, dto: MensajeDTO): Int = transaction {
+        // Si 'Mensajes' es tu objeto Table
+        Mensajes.update({ Mensajes.id eq id }) {
+            it[mensaje] = dto.mensaje
+            it[leido] = dto.leido
+        }
     }
 }

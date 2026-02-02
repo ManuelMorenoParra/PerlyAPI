@@ -30,19 +30,30 @@ fun Route.mensajesRouting() {
             call.respond(HttpStatusCode.Created, mapOf("id" to id))
         }
 
-        put("leido/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
+        put("/{id}") {
+            // 1. Intentamos obtener el ID
+            val idParam = call.parameters["id"]?.toIntOrNull()
+
+            // 2. Si es nulo, respondemos BadRequest y salimos de la función con 'return@put'
+            if (idParam == null) {
+                call.respond(HttpStatusCode.BadRequest, "El ID debe ser un número entero válido")
                 return@put
             }
 
-            val actualizado = service.marcarLeido(id)
+            // 3. Ahora 'idParam' ya es de tipo 'Int' (no nulo).
+            // IntelliJ ya no marcará error al pasarlo al service.
+            try {
+                val dto = call.receive<MensajeDTO>()
+                val exito = service.actualizarMensaje(idParam, dto)
 
-            if (actualizado)
-                call.respond(HttpStatusCode.OK)
-            else
-                call.respond(HttpStatusCode.NotFound)
+                if (exito) {
+                    call.respond(HttpStatusCode.OK, "Mensaje actualizado")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "No se encontró el mensaje")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Error en el formato del JSON: ${e.message}")
+            }
         }
 
         delete("{id}") {

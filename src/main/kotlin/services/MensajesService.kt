@@ -18,4 +18,9 @@ class MensajesService {
 
     fun eliminarMensaje(id: Int) =
         dao.delete(id)
+
+    fun actualizarMensaje(id: Int, dto: MensajeDTO): Boolean {
+        val filasAfectadas = dao.update(id, dto)
+        return filasAfectadas > 0
+    }
 }

@@ -25,9 +25,16 @@ fun Route.mensajesRouting() {
         }
 
         post {
-            val mensaje = call.receive<MensajeDTO>()
-            val id = service.enviarMensaje(mensaje)
-            call.respond(HttpStatusCode.Created, mapOf("id" to id))
+            try {
+                val mensaje = call.receive<MensajeDTO>()
+                val idGenerado = service.enviarMensaje(mensaje)
+                call.respond(HttpStatusCode.Created, idGenerado)
+            } catch (e: IllegalStateException) {
+                // Si saltó el bloqueo, respondemos 403 (Prohibido)
+                call.respond(HttpStatusCode.Forbidden, e.message ?: "Acceso denegado")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Error al enviar mensaje")
+            }
         }
 
         put("/{id}") {

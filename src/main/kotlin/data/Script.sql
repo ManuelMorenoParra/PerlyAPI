@@ -8,94 +8,114 @@ USE proyecto;
 
 -- Tablas principales
 CREATE TABLE IF NOT EXISTS usuarios (
-  id_usuario INT PRIMARY KEY AUTO_INCREMENT,
-  nombre VARCHAR(50) NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  fechaNacimiento DATE
+    id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    fechaNacimiento DATE
 );
 
 CREATE TABLE IF NOT EXISTS retos (
-  id_reto INT PRIMARY KEY AUTO_INCREMENT,
-  titulo VARCHAR(100) NOT NULL,
-  descripcion TEXT,
-  categoria VARCHAR(50),
-  dificultad INT,
-  puntos INT
+    id_reto INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    categoria VARCHAR(50),
+    dificultad INT,
+    puntos INT
 );
 
 -- Tablas dependientes
 CREATE TABLE IF NOT EXISTS publicaciones (
-   id_publicacion INT PRIMARY KEY AUTO_INCREMENT,
-   id_usuario INT,
-   texto TEXT,
-   imagen VARCHAR(255),
-   fecha DATETIME,
+    id_publicacion INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT,
+    texto TEXT,
+    imagen VARCHAR(255),
+    fecha DATETIME,
    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
 
 CREATE TABLE IF NOT EXISTS progreso (
-  id_progreso INT PRIMARY KEY AUTO_INCREMENT,
-  id_usuario INT,
-  id_reto INT,
-  fecha DATE,
-  completado BOOLEAN,
+    id_progreso INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT,
+    id_reto INT,
+    fecha DATE,
+    completado BOOLEAN,
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
   FOREIGN KEY (id_reto) REFERENCES retos(id_reto)
 );
 
 CREATE TABLE IF NOT EXISTS comentarios (
-  id_comentario INT PRIMARY KEY AUTO_INCREMENT,
-  id_publicacion INT,
-  id_usuario INT,
-  texto TEXT,
-  fecha DATETIME,
+    id_comentario INT PRIMARY KEY AUTO_INCREMENT,
+    id_publicacion INT,
+    id_usuario INT,
+    texto TEXT,
+    fecha DATETIME,
   FOREIGN KEY (id_publicacion) REFERENCES publicaciones(id_publicacion),
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
 
 CREATE TABLE IF NOT EXISTS mensajes (
-                                        id_mensaje INT PRIMARY KEY AUTO_INCREMENT,
-                                        id_emisor INT,
-                                        id_receptor INT,
-                                        mensaje TEXT,
-                                        fecha DATETIME,
-                                        leido BOOLEAN DEFAULT FALSE,
-                                        FOREIGN KEY (id_emisor) REFERENCES usuarios(id_usuario),
+    id_mensaje INT PRIMARY KEY AUTO_INCREMENT,
+    id_emisor INT,
+    id_receptor INT,
+    mensaje TEXT,
+    fecha DATETIME,
+    leido BOOLEAN DEFAULT FALSE,
+  FOREIGN KEY (id_emisor) REFERENCES usuarios(id_usuario),
   FOREIGN KEY (id_receptor) REFERENCES usuarios(id_usuario)
 );
 
 CREATE TABLE IF NOT EXISTS soporte (
-                                       id_ticket INT PRIMARY KEY AUTO_INCREMENT,
-                                       id_usuario INT,
-                                       asunto VARCHAR(100),
+    id_ticket INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT,
+    asunto VARCHAR(100),
     descripcion TEXT,
     estado ENUM('ABIERTO','EN_PROCESO','CERRADO') DEFAULT 'ABIERTO',
     respuesta TEXT,
     fecha_apertura DATETIME,
     fecha_respuesta DATETIME,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
 
 CREATE TABLE IF NOT EXISTS seguidores (
-                                          id_seguidor INT PRIMARY KEY AUTO_INCREMENT,
-                                          id_usuario INT,
-                                          id_seguido INT,
-                                          fecha DATETIME,
-                                          FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
-    FOREIGN KEY (id_seguido) REFERENCES usuarios(id_usuario),
-    UNIQUE KEY unico_seguimiento (id_usuario, id_seguido)
+    id_seguidor INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT,
+    id_seguido INT,
+    fecha DATETIME,
+  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
+  FOREIGN KEY (id_seguido) REFERENCES usuarios(id_usuario),
+  UNIQUE KEY unico_seguimiento (id_usuario, id_seguido)
 );
 
 CREATE TABLE IF NOT EXISTS likes (
-  id_like INT PRIMARY KEY AUTO_INCREMENT,
-  id_usuario INT,
-  id_publicacion INT,
-  fecha DATETIME,
+    id_like INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT,
+    id_publicacion INT,
+    fecha DATETIME,
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
   FOREIGN KEY (id_publicacion) REFERENCES publicaciones(id_publicacion),
   UNIQUE KEY unico_like (id_usuario, id_publicacion)
 );
+
+CREATE TABLE IF NOT EXISTS bloqueos (
+                                        id_bloqueo INT AUTO_INCREMENT PRIMARY KEY,
+                                        id_usuario_bloqueador INT NOT NULL,
+                                        id_usuario_bloqueado INT NOT NULL,
+                                        fecha_bloqueo DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    -- Restricciones para que los usuarios existan en la tabla usuarios
+                                        CONSTRAINT fk_bloqueador FOREIGN KEY (id_usuario_bloqueador)
+    REFERENCES usuarios(id) ON DELETE CASCADE,
+
+    CONSTRAINT fk_bloqueado FOREIGN KEY (id_usuario_bloqueado)
+    REFERENCES usuarios(id) ON DELETE CASCADE,
+
+    -- Evita que un usuario bloquee a la misma persona dos veces
+    UNIQUE(id_usuario_bloqueador, id_usuario_bloqueado),
+
+    -- Opcional: Evita que un usuario se bloquee a sí mismo
+    CONSTRAINT check_no_autobloqueo CHECK (id_usuario_bloqueador <> id_usuario_bloqueado)
+    );
 
 -- INSERTS DE EJEMPLO CORREGIDOS
 

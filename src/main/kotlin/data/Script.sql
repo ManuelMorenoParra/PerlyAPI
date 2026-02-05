@@ -103,17 +103,14 @@ CREATE TABLE IF NOT EXISTS bloqueos (
                                         id_usuario_bloqueado INT NOT NULL,
                                         fecha_bloqueo DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    -- Restricciones para que los usuarios existan en la tabla usuarios
+    -- Referenciamos 'id_usuario' que es el nombre real en tu tabla
                                         CONSTRAINT fk_bloqueador FOREIGN KEY (id_usuario_bloqueador)
-    REFERENCES usuarios(id) ON DELETE CASCADE,
+    REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
 
     CONSTRAINT fk_bloqueado FOREIGN KEY (id_usuario_bloqueado)
-    REFERENCES usuarios(id) ON DELETE CASCADE,
+    REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
 
-    -- Evita que un usuario bloquee a la misma persona dos veces
     UNIQUE(id_usuario_bloqueador, id_usuario_bloqueado),
-
-    -- Opcional: Evita que un usuario se bloquee a sí mismo
     CONSTRAINT check_no_autobloqueo CHECK (id_usuario_bloqueador <> id_usuario_bloqueado)
     );
 

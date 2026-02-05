@@ -28,4 +28,12 @@ object LikesDAO {
             .where { Likes.idPublicacion eq idPublicacion }
             .count()
     }
+
+        fun update(idLike: Int, like: LikeDTO): Boolean = transaction {
+            Likes.update({ Likes.id eq idLike }) {
+                it[idUsuario] = like.idUsuario
+                it[idPublicacion] = like.idPublicacion
+        } > 0
+    }
 }
+

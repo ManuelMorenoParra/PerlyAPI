@@ -24,5 +24,6 @@ fun Application.configureRouting() {
         likesRouting()
         seguidoresRouting()
         soporteRouting()
+        bloqueosRouting()
     }
 }

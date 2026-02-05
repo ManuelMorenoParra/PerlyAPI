@@ -35,6 +35,7 @@ fun Route.likesRouting() {
             val p = call.parameters["pub"]?.toIntOrNull()
 
             if (u != null && p != null) {
+                // Ahora debería reconocerse si el nombre en el Service es 'quitarLike'
                 LikesService.quitarLike(u, p)
                 call.respond(HttpStatusCode.OK, "Like eliminado")
             } else {
@@ -49,6 +50,20 @@ fun Route.likesRouting() {
                 call.respond(HttpStatusCode.OK, mapOf("total" to 1)) // Ejemplo estático
             } else {
                 call.respond(HttpStatusCode.BadRequest, "ID de publicación inválido")
+            }
+        }
+
+        put("/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest, "ID inválido")
+            val dto = call.receive<LikeDTO>()
+
+            // Si LikesService es un 'object', esta llamada es correcta
+            val actualizado = LikesService.actualizarLike(id, dto)
+
+            if (actualizado) {
+                call.respond(HttpStatusCode.OK, "Like actualizado")
+            } else {
+                call.respond(HttpStatusCode.NotFound, "No se encontró el like con ID $id")
             }
         }
     }

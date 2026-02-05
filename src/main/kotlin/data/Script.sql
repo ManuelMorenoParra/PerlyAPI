@@ -154,3 +154,7 @@ INSERT INTO seguidores (id_usuario, id_seguido, fecha) VALUES
 INSERT INTO likes (id_usuario, id_publicacion, fecha) VALUES
                                                           (3, 1, NOW()),
                                                           (4, 1, NOW());
+
+-- Usuario 1 bloquea al Usuario 2
+INSERT INTO bloqueos (id_usuario_bloqueador, id_usuario_bloqueado, fecha_bloqueo)
+VALUES (1, 2, CURRENT_TIMESTAMP);

@@ -4,15 +4,13 @@ import edu.gva.es.data.BloqueosDAO
 import domain.BloqueoDTO
 
 class BloqueosService {
-
-    fun bloquearUsuario(dto: BloqueoDTO): Boolean {
-        // Si ya está bloqueado, no hacemos nada
-        if (BloqueosDAO.estaBloqueado(dto.idBloqueador, dto.idBloqueado)) return false
-
-        return BloqueosDAO.insert(dto) > 0
+    // Esta es la función que te falta o que tiene otro nombre
+    fun obtenerTodos(): List<BloqueoDTO> {
+        return BloqueosDAO.getAll()
     }
 
-    fun desbloquearUsuario(idBloqueador: Int, idBloqueado: Int): Boolean {
-        return BloqueosDAO.delete(idBloqueador, idBloqueado) > 0
-    }
+    fun bloquearUsuario(dto: BloqueoDTO): Int = BloqueosDAO.insert(dto)
+
+    fun desbloquearUsuario(idBloqueador: Int, idBloqueado: Int): Boolean =
+        BloqueosDAO.delete(idBloqueador, idBloqueado)
 }

@@ -16,4 +16,8 @@ class PublicacionesService {
 
     fun delete(id: Int): Boolean =
         PublicacionesDAO.delete(id)
+
+    fun editarPublicacion(id: Int, dto: PublicacionDTO): Boolean {
+        return PublicacionesDAO.actualizar(id, dto)
+    }
 }

@@ -29,4 +29,12 @@ object SeguidoresDAO {
             .where { Seguidores.idSeguido eq idUsuario }
             .map { it[Seguidores.idUsuario] as Int }
     }
+
+    fun actualizar(idSeguimiento: Int, dto: SeguidorDTO): Boolean = transaction {
+        Seguidores.update({ Seguidores.id eq idSeguimiento }) {
+            it[idUsuario] = dto.idUsuario
+            it[idSeguido] = dto.idSeguido
+            it[fecha] = LocalDateTime.now() // Actualizamos la fecha al momento del cambio
+        } > 0
+    }
 }

@@ -20,8 +20,7 @@ object PublicacionesDAO {
     }
 
     fun getByUsuario(idUsuario: Int): List<PublicacionDTO> = transaction {
-        Publicaciones
-            .select { Publicaciones.idUsuario eq idUsuario }
+        Publicaciones.selectAll().where { Publicaciones.idUsuario eq idUsuario }
             .map { it.toDTO() }
     }
 
@@ -35,5 +34,14 @@ object PublicacionesDAO {
 
     fun delete(id: Int): Boolean = transaction {
         Publicaciones.deleteWhere { Publicaciones.id eq id } > 0
+    }
+
+    fun actualizar(idPublicacion: Int, dto: PublicacionDTO): Boolean = transaction {
+        Publicaciones.update({ Publicaciones.id eq idPublicacion }) {
+            it[idUsuario] = dto.idUsuario
+            it[texto] = dto.texto
+            // La fecha la mantenemos o la actualizamos a "ahora" si prefieres:
+            it[fecha] = LocalDateTime.now()
+        } > 0
     }
 }

@@ -49,6 +49,27 @@ fun Route.progresoRouting() {
             call.respond(mapOf("puntosTotales" to puntos))
         }
 
+        put("/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "ID de progreso no válido")
+                return@put
+            }
+
+            try {
+                val dto = call.receive<ProgresoDTO>()
+                val exito = service.editarProgreso(id, dto)
+
+                if (exito) {
+                    call.respond(HttpStatusCode.OK, "Progreso actualizado correctamente")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "No se encontró el progreso con ID $id")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error al actualizar: ${e.message}")
+            }
+        }
+
         delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 

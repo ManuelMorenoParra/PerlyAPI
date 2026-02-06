@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq // Importante para deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
+import data.Progreso
 
 class ProgresoDAO {
 
@@ -49,5 +50,15 @@ class ProgresoDAO {
 
     fun delete(idProgreso: Int): Int = transaction {
         Progreso.deleteWhere { Progreso.id eq idProgreso }
+    }
+
+    fun actualizar(idProgreso: Int, dto: ProgresoDTO): Boolean = transaction {
+        Progreso.update({ Progreso.id eq idProgreso }) {
+            it[idUsuario] = dto.idUsuario
+            it[idReto] = dto.idReto
+            it[puntosGanados] = dto.puntosGanados
+            it[fecha] = LocalDate.parse(dto.fecha)
+            it[completado] = dto.completado
+        } > 0
     }
 }

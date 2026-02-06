@@ -30,4 +30,14 @@ object SoportesDAO {
             .where { Soportes.idUsuario eq idUsuario }
             .map { it[Soportes.asunto] }
     }
+
+    fun actualizar(idSoporte: Int, dto: SoporteDTO): Boolean = transaction {
+        Soportes.update({ Soportes.id eq idSoporte }) {
+
+            it[Soportes.asunto] = dto.asunto
+            it[Soportes.descripcion] = dto.descripcion
+            it[Soportes.estado] = dto.estado
+
+        } > 0
+    }
 }

@@ -1,7 +1,7 @@
 package edu.gva.es.routes
 
 import edu.gva.es.domain.SeguidorDTO
-import edu.gva.es.services.SeguidoresService
+import edu.gva.es.services.SeguidoresService // Importa el object
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -14,16 +14,11 @@ fun Route.seguidoresRouting() {
         post {
             try {
                 val dto = call.receive<SeguidorDTO>()
+                // Llamada directa al object
                 SeguidoresService.seguir(dto)
                 call.respond(HttpStatusCode.Created, "Seguimiento creado correctamente")
             } catch (e: Exception) {
-                val errorFull = e.cause?.message ?: e.message ?: ""
-                when {
-                    errorFull.contains("Duplicate entry") ->
-                        call.respond(HttpStatusCode.Conflict, "Ya sigues a este usuario")
-                    else ->
-                        call.respond(HttpStatusCode.InternalServerError, "Error: $errorFull")
-                }
+                call.respond(HttpStatusCode.InternalServerError, "Error: ${e.message}")
             }
         }
 
@@ -31,8 +26,7 @@ fun Route.seguidoresRouting() {
             val id = call.parameters["id"]?.toIntOrNull()
                 ?: return@get call.respond(HttpStatusCode.BadRequest, "ID no válido")
 
-            // CAMBIADO: Antes decía obtenerSeguidores, pero en tu Service se llama 'listar'
-            val lista = SeguidoresService.listar(id)
+            val lista = SeguidoresService.listar(id) // Llamada directa
             call.respond(lista)
         }
 
@@ -44,12 +38,28 @@ fun Route.seguidoresRouting() {
                 return@delete call.respond(HttpStatusCode.BadRequest, "IDs no válidos")
             }
 
-            val eliminados = SeguidoresService.dejar(idUser, idFollowed)
+            val eliminados = SeguidoresService.dejar(idUser, idFollowed) // Llamada directa
+            if (eliminados > 0) call.respond(HttpStatusCode.OK) else call.respond(HttpStatusCode.NotFound)
+        }
 
-            if (eliminados > 0) {
-                call.respond(HttpStatusCode.OK, "Ya no sigues a este usuario")
-            } else {
-                call.respond(HttpStatusCode.NotFound, "No se encontró la relación")
+        put("/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+                ?: return@put call.respond(HttpStatusCode.BadRequest, "ID no válido")
+
+            try {
+
+                val dto = call.receive<SeguidorDTO>()
+
+                val actualizado = SeguidoresService.editarSeguimiento(id, dto)
+
+                if (actualizado) {
+                    call.respond(HttpStatusCode.OK, "Seguimiento actualizado")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "No se encontró el registro")
+                }
+            } catch (e: Exception) {
+
+                call.respond(HttpStatusCode.InternalServerError, "Error: ${e.message}")
             }
         }
     }

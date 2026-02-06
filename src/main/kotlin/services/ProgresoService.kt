@@ -1,4 +1,4 @@
-package services // Asegúrate de que el package coincida con tu proyecto
+package services
 
 import data.ProgresoDAO
 import domain.ProgresoDTO
@@ -7,8 +7,7 @@ class ProgresoService {
 
     private val dao = ProgresoDAO()
 
-    fun obtenerProgresoUsuario(idUsuario: Int) =
-        dao.getByUsuario(idUsuario)
+    fun obtenerProgresoUsuario(idUsuario: Int) = dao.getByUsuario(idUsuario)
 
     fun registrarProgreso(progreso: ProgresoDTO): Int {
         if (dao.yaCompletado(progreso.idUsuario, progreso.idReto)) {
@@ -17,18 +16,14 @@ class ProgresoService {
         return dao.insert(progreso)
     }
 
-    fun obtenerPuntosTotales(idUsuario: Int) =
-        dao.totalPuntosUsuario(idUsuario)
-
-    fun delete(id: Int): Boolean {
-
-        val filasBorradas = dao.delete(id)
-        return filasBorradas > 0
-    }
+    fun obtenerPuntosTotales(idUsuario: Int) = dao.totalPuntosUsuario(idUsuario)
 
     fun eliminarProgreso(id: Int): Boolean {
+        return dao.delete(id) > 0
+    }
 
-        val filasBorradas = dao.delete(id)
-        return filasBorradas > 0
+    // Esta es la función limpia que llama al DAO
+    fun editarProgreso(id: Int, dto: ProgresoDTO): Boolean {
+        return dao.actualizar(id, dto)
     }
 }

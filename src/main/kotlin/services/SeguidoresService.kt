@@ -10,4 +10,8 @@ object SeguidoresService {
     fun dejar(usuario: Int, seguido: Int) = SeguidoresDAO.dejarDeSeguir(usuario, seguido)
 
     fun listar(id: Int): List<Int> = SeguidoresDAO.obtenerSeguidores(id)
+
+    fun editarSeguimiento(id: Int, dto: SeguidorDTO): Boolean {
+        return SeguidoresDAO.actualizar(id, dto)
+    }
 }

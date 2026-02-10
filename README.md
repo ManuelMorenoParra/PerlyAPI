@@ -1,44 +1,154 @@
-# UD5ManuelMorenoParra
+📌 PerlyAPI
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+API REST desarrollada con Ktor, Exposed y MySQL para una plataforma social con retos,
 
-Here are some useful links to get you started:
+publicaciones, seguidores y comentarios.
 
-- [Ktor Documentation](https://ktor.io/docs/home.html)
-- [Ktor GitHub page](https://github.com/ktorio/ktor)
-- The [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). You'll need
-  to [request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up) to join.
+🚀 Tecnologías
 
-## Features
+- Kotlin
+- Ktor (Backend)
+- Exposed (ORM)
+- MySQL
+- kotlinx.serialization
+- Gradle
+- Postman (testing)
 
-Here's a list of features included in this project:
+🗄️ Base de datos
 
-| Name                                                                   | Description                                                                        |
-|------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [GSON](https://start.ktor.io/p/ktor-gson)                              | Handles JSON serialization using GSON library                                      |
-| [Jackson](https://start.ktor.io/p/ktor-jackson)                        | Handles JSON serialization using Jackson library                                   |
-| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
+La base de datos utilizada es MySQL con el nombre:
 
-## Building & Running
+proyecto
 
-To build or run the project, use one of the following tasks:
+Incluye las tablas:
 
-| Task                                    | Description                                                          |
-|-----------------------------------------|----------------------------------------------------------------------|
-| `./gradlew test`                        | Run the tests                                                        |
-| `./gradlew build`                       | Build everything                                                     |
-| `./gradlew buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
-| `./gradlew buildImage`                  | Build the docker image to use with the fat JAR                       |
-| `./gradlew publishImageToLocalRegistry` | Publish the docker image locally                                     |
-| `./gradlew run`                         | Run the server                                                       |
-| `./gradlew runDocker`                   | Run using the local docker image                                     |
+- usuarios
+- retos
+- publicaciones
+- progreso
+- comentarios
+- mensajes
+- soporte
+- seguidores
+- likes
 
-If the server starts successfully, you'll see the following output:
+El script completo de creación e inserción inicial se encuentra en:
 
-```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
-```
+/database/proyecto.sql
 
+🔌 Conexión a la base de datos
+
+Archivo: core/ConexionDB.kt
+
+Database.connect(
+
+url = "jdbc:mysql://localhost:3306/proyecto",
+
+driver = "com.mysql.cj.jdbc.Driver",
+
+user = "root",
+
+password = ""
+
+)
+
+🔁 Endpoints principales
+
+📍 Retos
+
+Método Endpoint Descripción
+
+GET /retos Obtener todos los retos
+
+GET /retos/{id} Obtener reto por ID
+
+📍 Comentarios
+
+Método Endpoint Descripción
+
+GET /comentarios/{id} Obtener comentario por ID
+
+GET /comentarios/publicacion/{id} Comentarios de una publicación
+
+POST /comentarios Crear comentario
+
+DELETE /comentarios/{id} Eliminar comentario
+
+📍 Seguidores
+
+Método Endpoint Descripción
+
+POST /seguidores Seguir a un usuario
+
+DELETE /seguidores Dejar de seguir
+
+GET /seguidores/{id\_usuario} Listar seguidores
+
+🧪 Ejemplo POST (Postman)
+
+POST /seguidores
+
+URL
+
+http://localhost:8080/seguidores
+
+Headers
+
+Content-Type: application/json
+
+Body
+
+{
+
+"idUsuario": 3,
+
+"idSeguido": 4
+
+}
+
+Errores comunes y soluciones
+
+❌ 415 Unsupported Media Type
+
+Causa
+
+- Campo obligatorio faltante en el DTO
+- Content-Type incorrecto
+
+Solución
+
+- Usar Content-Type: application/json
+- Hacer campos opcionales (? = null) en DTOs de entrada
+
+❌ 500 Internal Server Error
+
+Causa
+
+- Columnas que no coinciden con la BD
+- IDs inexistentes (FK)
+- Uso de !!
+
+Solución
+
+- Validar parámetros
+- Revisar nombres exactos de columnas
+- Controlar null y devolver 404/400
+
+🧠 Buenas prácticas aplicadas
+
+- Separación por capas:
+- routes → HTTP
+- services → lógica
+- data → acceso a datos
+- domain → DTOs
+- Uso de object para DAOs y Services
+- Transacciones con Exposed
+- Serialización con kotlinx.serialization
+
+▶️ Ejecución del proyecto
+
+./gradlew run
+
+La API estará disponible en:
+
+http://localhost:8080

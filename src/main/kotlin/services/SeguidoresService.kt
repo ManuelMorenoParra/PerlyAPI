@@ -3,7 +3,6 @@ package edu.gva.es.services
 import edu.gva.es.data.SeguidoresDAO
 import edu.gva.es.domain.SeguidorDTO
 
-// En SeguidoresService.kt
 object SeguidoresService {
     fun seguir(dto: SeguidorDTO) = SeguidoresDAO.seguir(dto)
 

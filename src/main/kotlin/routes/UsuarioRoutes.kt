@@ -14,7 +14,6 @@ fun Route.usuarioRouting() {
 
     val service = UsuariosService
 
-    // Bloque de autenticación
     route("/auth") {
         post("/login") {
             val login = call.receive<LoginRequest>()
@@ -35,13 +34,11 @@ fun Route.usuarioRouting() {
 
     route("/usuarios") {
 
-        // 1. GET: Obtener todos
         get {
             val lista = service.listarUsuarios()
             call.respond(lista)
         }
 
-        // 2. GET por ID
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
@@ -57,7 +54,6 @@ fun Route.usuarioRouting() {
             }
         }
 
-        // 3. POST: Crear nuevo usuario
         post {
             try {
                 val usuario = call.receive<UsuarioDTO>()
@@ -73,7 +69,6 @@ fun Route.usuarioRouting() {
             }
         }
 
-        // 4. PUT: Actualizar usuario
         put("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
@@ -91,7 +86,6 @@ fun Route.usuarioRouting() {
             }
         }
 
-        // 5. DELETE: Eliminar usuario (Normal - Puede fallar si hay FK)
         delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
@@ -111,7 +105,6 @@ fun Route.usuarioRouting() {
             }
         }
 
-        // 6. DELETE: LIMPIEZA TOTAL (Eliminación en cascada manual)
         delete("/full/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
@@ -127,7 +120,6 @@ fun Route.usuarioRouting() {
             }
         }
 
-        // 7. GET por EMAIL
         get("/email/{email}") {
             val email = call.parameters["email"]
             if (email == null) {

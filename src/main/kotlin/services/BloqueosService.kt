@@ -4,7 +4,7 @@ import edu.gva.es.data.BloqueosDAO
 import domain.BloqueoDTO
 
 class BloqueosService {
-    // Esta es la función que te falta o que tiene otro nombre
+
     fun obtenerTodos(): List<BloqueoDTO> {
         return BloqueosDAO.getAll()
     }

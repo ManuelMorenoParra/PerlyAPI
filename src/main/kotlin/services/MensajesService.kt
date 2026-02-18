@@ -23,12 +23,11 @@ class MensajesService {
     }
 
     fun enviarMensaje(mensaje: MensajeDTO): Int {
-        // 1. Lógica de seguridad: Comprobar bloqueo
+
         if (BloqueosDAO.estaBloqueado(mensaje.idReceptor, mensaje.idEmisor)) {
             throw IllegalStateException("No puedes enviar mensajes: este usuario te ha bloqueado")
         }
 
-        // 2. Si pasa el filtro, llamar al DAO
         return dao.insert(mensaje)
     }
 }

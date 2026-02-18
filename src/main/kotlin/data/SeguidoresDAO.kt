@@ -23,7 +23,6 @@ object SeguidoresDAO {
         }
     }
 
-    // Añadimos el tipo de retorno explícito para evitar errores de inferencia
     fun obtenerSeguidores(idUsuario: Int): List<Int> = transaction {
         Seguidores.selectAll()
             .where { Seguidores.idSeguido eq idUsuario }

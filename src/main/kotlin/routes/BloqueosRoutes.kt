@@ -14,12 +14,11 @@ fun Route.bloqueosRouting() {
     val service = BloqueosService()
 
     route("/bloqueos") {
-        // GET: Ahora funcionará y devolverá la lista
+
         get {
             call.respond(service.obtenerTodos())
         }
 
-        // POST: Bloquear
         post {
             try {
                 // Especificamos <BloqueoDTO> para que Ktor sepa a qué clase mapear el JSON
@@ -31,8 +30,6 @@ fun Route.bloqueosRouting() {
             }
         }
 
-        // DELETE: Desbloquear usuario B por parte de A
-        // URL: /bloqueos/1/2
         delete("/{bloqueador}/{bloqueado}") {
             val bloqueador = call.parameters["bloqueador"]?.toIntOrNull()
             val bloqueado = call.parameters["bloqueado"]?.toIntOrNull()

@@ -22,7 +22,6 @@ class ProgresoService {
         return dao.delete(id) > 0
     }
 
-    // Esta es la función limpia que llama al DAO
     fun editarProgreso(id: Int, dto: ProgresoDTO): Boolean {
         return dao.actualizar(id, dto)
     }

@@ -38,17 +38,14 @@ fun Route.mensajesRouting() {
         }
 
         put("/{id}") {
-            // 1. Intentamos obtener el ID
+
             val idParam = call.parameters["id"]?.toIntOrNull()
 
-            // 2. Si es nulo, respondemos BadRequest y salimos de la función con 'return@put'
             if (idParam == null) {
                 call.respond(HttpStatusCode.BadRequest, "El ID debe ser un número entero válido")
                 return@put
             }
 
-            // 3. Ahora 'idParam' ya es de tipo 'Int' (no nulo).
-            // IntelliJ ya no marcará error al pasarlo al service.
             try {
                 val dto = call.receive<MensajeDTO>()
                 val exito = service.actualizarMensaje(idParam, dto)

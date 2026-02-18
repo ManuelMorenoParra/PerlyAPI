@@ -7,7 +7,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 object RetosDAO {
 
-    // Insertar un nuevo reto y devolver el DTO con id generado
     fun crearReto(reto: RetoDTO): RetoDTO {
         var idGenerado: Int? = null
         transaction {
@@ -20,7 +19,6 @@ object RetosDAO {
         return reto.copy(id = idGenerado)
     }
 
-    // Obtener todos los retos
     fun obtenerTodos(): List<RetoDTO> = transaction {
         Retos.selectAll().map {
             RetoDTO(
@@ -32,7 +30,6 @@ object RetosDAO {
         }
     }
 
-    // Obtener un reto por id
     fun obtenerPorId(id: Int): RetoDTO? = transaction {
         Retos.select { Retos.id_reto eq id }
             .map {
@@ -46,7 +43,6 @@ object RetosDAO {
             .singleOrNull()
     }
 
-    // Actualizar un reto
     fun actualizarReto(reto: RetoDTO): Boolean = transaction {
         val updated = Retos.update({ Retos.id_reto eq (reto.id ?: 0) }) {
             it[titulo] = reto.titulo
@@ -56,7 +52,6 @@ object RetosDAO {
         updated > 0
     }
 
-    // Eliminar un reto por id
     fun eliminarReto(id: Int): Boolean = transaction {
         val deleted = Retos.deleteWhere { Retos.id_reto eq id }
         deleted > 0

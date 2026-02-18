@@ -10,8 +10,8 @@ fun Application.configureSerialization() {
         json(Json {
             prettyPrint = true
             isLenient = true
-            ignoreUnknownKeys = true // Esto evita el error 400 si envías campos de más
-            explicitNulls = false    // Esto permite que "id": null o "fecha": null funcionen
+            ignoreUnknownKeys = true
+            explicitNulls = false
             encodeDefaults = true
         })
     }

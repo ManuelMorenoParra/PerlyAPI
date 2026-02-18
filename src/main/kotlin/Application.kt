@@ -17,7 +17,7 @@ fun main() {
 }
 
 fun Application.module() {
-    configureSerialization() // Asegúrate de que este plugin tenga ignoreUnknownKeys = true
+    configureSerialization()
     configureSecurity()
     configureRouting()
 }

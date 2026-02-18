@@ -41,7 +41,7 @@ class MensajesDAO {
     }
 
     fun getMensajesDeUsuario(idUsuarioActual: Int): List<MensajeDTO> = transaction {
-        // 1. Obtenemos las listas de IDs de usuarios bloqueados
+
         val listaBloqueados = Bloqueos.selectAll()
             .where { Bloqueos.idBloqueador eq idUsuarioActual }
             .map { it[Bloqueos.idBloqueado] }
@@ -52,14 +52,13 @@ class MensajesDAO {
 
         val todosLosBloqueos = (listaBloqueados + listaMeHanBloqueado).distinct()
 
-        // 2. Consulta principal
         Mensajes.selectAll()
             .where {
                 (Mensajes.idReceptor eq idUsuarioActual) and
                         (Mensajes.idEmisor notInList todosLosBloqueos)
             }
             .map { row ->
-                // ¡IMPORTANTE! Aquí es donde creamos el DTO para que no devuelva Unit
+
                 MensajeDTO(
                     id = row[Mensajes.id],
                     idEmisor = row[Mensajes.idEmisor],

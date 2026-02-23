@@ -9,6 +9,7 @@ object Publicaciones : Table("publicaciones") {
     val idUsuario = integer("id_usuario")
     val texto = text("texto")
     val fecha = datetime("fecha")
+    val imagen = blob("imagen").nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

@@ -18,9 +18,13 @@ fun Route.publicacionesRouting() {
         }
 
         post {
-            val pub = call.receive<PublicacionDTO>()
-            val id = service.create(pub)
-            call.respond(HttpStatusCode.Created, mapOf("id" to id))
+            try {
+                val pub = call.receive<PublicacionDTO>()
+                val id = service.create(pub)
+                call.respond(HttpStatusCode.Created, mapOf("id" to id))
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Error en el formato: ${e.message}")
+            }
         }
 
         put("/{id}") {
@@ -31,15 +35,13 @@ fun Route.publicacionesRouting() {
             }
 
             try {
-
                 val dto = call.receive<PublicacionDTO>()
-
                 val actualizado = service.editarPublicacion(id, dto)
 
                 if (actualizado) {
                     call.respond(HttpStatusCode.OK, "Publicación actualizada")
                 } else {
-                    call.respond(HttpStatusCode.NotFound, "No se encontró la publicación con ID $id")
+                    call.respond(HttpStatusCode.NotFound, "No se encontró la publicación")
                 }
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, "Error: ${e.message}")

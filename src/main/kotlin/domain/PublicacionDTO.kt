@@ -7,5 +7,6 @@ data class PublicacionDTO(
     val id: Int? = null,
     val idUsuario: Int,
     val texto: String,
-    val fecha: String? = null
+    val fecha: String? = null,
+    val imagenBase64: String? = null
 )

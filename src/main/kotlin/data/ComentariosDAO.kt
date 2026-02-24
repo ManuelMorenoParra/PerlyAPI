@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import domain.ComentarioDTO
 import java.time.LocalDateTime
+import edu.gva.es.domain.*
 
 object ComentariosDAO {
 

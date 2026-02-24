@@ -5,6 +5,7 @@ import edu.gva.es.domain.UsuarioDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import edu.gva.es.domain.*
 
 object UsuariosDAO {
 
@@ -13,7 +14,7 @@ object UsuariosDAO {
         nombre = this[Usuarios.nombre],
         email = this[Usuarios.email],
         password = this[Usuarios.password],
-        fechaNacimiento = this[Usuarios.fechaNacimiento]
+        fechaNacimiento = it[Usuarios.fechaNacimiento]?.toString()
     )
 
     fun insertar(u: UsuarioDTO): Int = transaction {

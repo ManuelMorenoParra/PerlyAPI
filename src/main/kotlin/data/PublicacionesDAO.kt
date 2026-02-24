@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import java.time.LocalDateTime
 import java.util.Base64
+import edu.gva.es.domain.*
 
 object PublicacionesDAO {
 

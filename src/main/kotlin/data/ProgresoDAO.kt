@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq // Importante para dele
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
 import data.Progreso
+import edu.gva.es.domain.*
 
 class ProgresoDAO {
 

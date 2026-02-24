@@ -9,6 +9,7 @@ import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.update
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.and
+import edu.gva.es.domain.*
 
 class MensajesDAO {
 

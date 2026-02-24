@@ -1,5 +1,9 @@
 package edu.gva.es.core
 
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.transaction
+import edu.gva.es.data.*
+
 object ConexionDB {
 
     private const val HOST = "127.0.0.1"

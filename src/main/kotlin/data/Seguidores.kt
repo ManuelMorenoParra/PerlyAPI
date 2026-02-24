@@ -2,6 +2,7 @@ package edu.gva.es.data
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
+import edu.gva.es.domain.*
 
 object Seguidores : Table("seguidores") {
     val id = integer("id_seguidor").autoIncrement()

@@ -1,6 +1,7 @@
 package edu.gva.es.data
 
 import org.jetbrains.exposed.sql.Table
+import edu.gva.es.domain.*
 
 object Retos : Table("retos") {
     val id_reto = integer("id_reto").autoIncrement() // coincide con la columna en la DB

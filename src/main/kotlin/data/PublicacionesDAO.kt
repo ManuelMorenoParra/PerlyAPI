@@ -1,19 +1,17 @@
 package edu.gva.es.data
 
-import edu.gva.es.domain.*
-import domain.PublicacionDTO
+import edu.gva.es.domain.PublicacionDTO
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import java.time.LocalDateTime
 import java.util.Base64
-import edu.gva.es.domain.*
 
 object PublicacionesDAO {
 
     private fun ResultRow.toDTO(): PublicacionDTO {
-        // Extraemos el blob y lo convertimos a Base64 si existe
+        // En Exposed, para obtener el BLOB usamos .getOrNull si la columna es nullable
         val blob = this.getOrNull(Publicaciones.imagen)
         val base64String = blob?.let {
             Base64.getEncoder().encodeToString(it.bytes)
@@ -37,17 +35,20 @@ object PublicacionesDAO {
             .map { it.toDTO() }
     }
 
-    // Unificamos el insert para que acepte el objeto con o sin imagen
     fun insert(pub: PublicacionDTO): Int = transaction {
         Publicaciones.insert {
             it[idUsuario] = pub.idUsuario
             it[texto] = pub.texto
+            // Asegúrate de que en tu tabla 'fecha' sea una columna de tipo datetime/timestamp
             it[fecha] = LocalDateTime.now()
 
-            // Si el DTO trae Base64, lo convertimos a Bytes para el BLOB
             pub.imagenBase64?.let { base64 ->
-                val bytes = Base64.getDecoder().decode(base64)
-                it[imagen] = ExposedBlob(bytes)
+                try {
+                    val bytes = Base64.getDecoder().decode(base64)
+                    it[imagen] = ExposedBlob(bytes)
+                } catch (e: Exception) {
+                    // Si el base64 está mal formado, simplemente no guardamos imagen
+                }
             }
         } get Publicaciones.id
     }
@@ -59,7 +60,6 @@ object PublicacionesDAO {
     fun actualizar(idPublicacion: Int, dto: PublicacionDTO): Boolean = transaction {
         Publicaciones.update({ Publicaciones.id eq idPublicacion }) {
             it[texto] = dto.texto
-            // Actualizamos imagen solo si se envía una nueva
             dto.imagenBase64?.let { base64 ->
                 val bytes = Base64.getDecoder().decode(base64)
                 it[imagen] = ExposedBlob(bytes)

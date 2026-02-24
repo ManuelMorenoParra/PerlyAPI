@@ -7,6 +7,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import services.MensajesService
+import edu.gva.es.domain.*
 
 fun Route.mensajesRouting() {
 

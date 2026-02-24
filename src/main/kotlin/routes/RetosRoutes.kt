@@ -7,6 +7,7 @@ import io.ktor.server.request.*
 import io.ktor.http.*
 import services.RetosService
 import domain.RetoDTO
+import edu.gva.es.domain.*
 
 fun Route.retosRouting() {
 

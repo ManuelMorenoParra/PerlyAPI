@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import edu.gva.es.domain.*
 import services.ComentariosService
 
 fun Route.comentariosRouting() {

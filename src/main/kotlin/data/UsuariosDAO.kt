@@ -1,37 +1,38 @@
 package edu.gva.es.data
 
-import edu.gva.es.data.Usuarios
 import edu.gva.es.domain.UsuarioDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import edu.gva.es.domain.*
+import java.time.LocalDate
 
 object UsuariosDAO {
 
+    // Cambiado 'it' por 'this' y ajustado a 'id' (como estaba en tu objeto Usuarios)
     private fun ResultRow.toUsuarioDTO() = UsuarioDTO(
-        id = this[Usuarios.idUsuario],
+        id = this[Usuarios.id],
         nombre = this[Usuarios.nombre],
         email = this[Usuarios.email],
         password = this[Usuarios.password],
-        fechaNacimiento = it[Usuarios.fechaNacimiento]?.toString()
+        fechaNacimiento = this[Usuarios.fechaNacimiento]?.toString()
     )
 
     fun insertar(u: UsuarioDTO): Int = transaction {
         Usuarios.insert {
             it[nombre] = u.nombre
             it[email] = u.email
-            it[password] = u.password
-            it[fechaNacimiento] = u.fechaNacimiento
-        } get Usuarios.idUsuario
+            it[password] = u.password ?: ""
+            // Conversión de String a LocalDate
+            it[fechaNacimiento] = u.fechaNacimiento?.let { fecha -> LocalDate.parse(fecha) }
+        } get Usuarios.id
     }
 
-    fun actualizar(id: Int, u: UsuarioDTO): Int = transaction {
-        Usuarios.update({ Usuarios.idUsuario eq id }) {
+    fun actualizar(idUsuario: Int, u: UsuarioDTO): Int = transaction {
+        Usuarios.update({ Usuarios.id eq idUsuario }) {
             it[nombre] = u.nombre
             it[email] = u.email
-            it[password] = u.password
-            it[fechaNacimiento] = u.fechaNacimiento
+            if (u.password != null) it[password] = u.password
+            it[fechaNacimiento] = u.fechaNacimiento?.let { fecha -> LocalDate.parse(fecha) }
         }
     }
 
@@ -39,18 +40,18 @@ object UsuariosDAO {
         Usuarios.selectAll().map { it.toUsuarioDTO() }
     }
 
-    fun seleccionarPorId(id: Int): UsuarioDTO? = transaction {
-        Usuarios.select { Usuarios.idUsuario eq id }
+    fun seleccionarPorId(idUsuario: Int): UsuarioDTO? = transaction {
+        Usuarios.selectAll().where { Usuarios.id eq idUsuario }
             .map { it.toUsuarioDTO() }
             .singleOrNull()
     }
 
-    fun eliminar(id: Int): Int = transaction {
-        Usuarios.deleteWhere { Usuarios.idUsuario eq id }
+    fun eliminar(idUsuario: Int): Int = transaction {
+        Usuarios.deleteWhere { id eq idUsuario }
     }
 
     fun seleccionarPorEmail(email: String): UsuarioDTO? = transaction {
-        Usuarios.select { Usuarios.email eq email }
+        Usuarios.selectAll().where { Usuarios.email eq email }
             .map { it.toUsuarioDTO() }
             .singleOrNull()
     }

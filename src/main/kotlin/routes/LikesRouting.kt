@@ -1,4 +1,4 @@
-package routes
+package edu.gva.es.routes
 
 import edu.gva.es.domain.LikeDTO
 import edu.gva.es.services.LikesService

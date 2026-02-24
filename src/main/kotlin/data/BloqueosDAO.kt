@@ -1,6 +1,6 @@
 package edu.gva.es.data
 
-import domain.BloqueoDTO
+import edu.gva.es.domain.BloqueoDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.datetime

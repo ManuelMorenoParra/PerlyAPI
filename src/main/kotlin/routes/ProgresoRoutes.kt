@@ -1,4 +1,4 @@
-package routes
+package edu.gva.es.routes
 
 import domain.ProgresoDTO
 import io.ktor.http.*

@@ -1,4 +1,4 @@
-package routes
+package edu.gva.es.routes
 
 import domain.BloqueoDTO
 import io.ktor.http.*

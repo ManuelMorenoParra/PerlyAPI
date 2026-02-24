@@ -1,5 +1,6 @@
-package data
+package edu.gva.es.data
 
+import edu.gva.es.domain.*
 import domain.PublicacionDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction

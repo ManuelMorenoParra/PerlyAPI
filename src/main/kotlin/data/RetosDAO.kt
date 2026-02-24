@@ -1,4 +1,4 @@
-package data
+package edu.gva.es.data
 
 import domain.RetoDTO
 import org.jetbrains.exposed.sql.*

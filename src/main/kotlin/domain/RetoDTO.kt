@@ -1,4 +1,4 @@
-package edu.gva.es.data
+package edu.gva.es.domain
 
 import org.jetbrains.exposed.sql.Table
 

@@ -1,4 +1,4 @@
-package routes
+package edu.gva.es.routes
 
 import domain.ComentarioDTO
 import io.ktor.http.*

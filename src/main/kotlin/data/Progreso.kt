@@ -1,4 +1,4 @@
-package data
+package edu.gva.es.data
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.date

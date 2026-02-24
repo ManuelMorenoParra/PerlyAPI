@@ -1,4 +1,4 @@
-package services
+package edu.gva.es.services
 
 import data.RetosDAO
 import domain.RetoDTO

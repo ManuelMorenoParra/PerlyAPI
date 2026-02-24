@@ -1,4 +1,4 @@
-package routes
+package edu.gva.es.routes
 
 import domain.PublicacionDTO
 import io.ktor.http.*

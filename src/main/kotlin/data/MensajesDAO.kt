@@ -1,4 +1,4 @@
-package data
+package edu.gva.es.data
 
 import domain.MensajeDTO
 import edu.gva.es.data.Bloqueos

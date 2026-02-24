@@ -1,4 +1,4 @@
-package services
+package edu.gva.es.services
 
 import edu.gva.es.data.BloqueosDAO
 import domain.BloqueoDTO

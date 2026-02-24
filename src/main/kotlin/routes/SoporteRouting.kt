@@ -1,4 +1,4 @@
-package routes
+package edu.gva.es.routes
 
 import edu.gva.es.domain.SoporteDTO
 import edu.gva.es.services.SoporteService

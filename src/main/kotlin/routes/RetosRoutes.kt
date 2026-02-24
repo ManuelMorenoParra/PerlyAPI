@@ -1,4 +1,4 @@
-package routes
+package edu.gva.es.routes
 
 import io.ktor.server.routing.*
 import io.ktor.server.application.*

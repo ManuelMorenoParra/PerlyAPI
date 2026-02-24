@@ -1,4 +1,4 @@
-package services
+package edu.gva.es.services
 
 import data.PublicacionesDAO
 import domain.PublicacionDTO

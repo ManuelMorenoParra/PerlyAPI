@@ -1,4 +1,4 @@
-package services
+package edu.gva.es.services
 
 import data.ProgresoDAO
 import domain.ProgresoDTO

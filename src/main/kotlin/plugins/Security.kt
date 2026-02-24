@@ -7,18 +7,14 @@ import io.ktor.server.sessions.*
 import io.ktor.server.response.*
 
 fun Application.configureSecurity() {
-    install(Sessions) {
-        cookie<UserSession>("USER_SESSION") {
-            cookie.path = "/"
-            cookie.maxAgeInSeconds = 3600 // La sesión expira en 1 hora
-        }
-    }
+    routing {
 
-    install(Authentication) {
-        session<UserSession>("auth-session") {
-            validate { session -> session }
-            challenge {
-                call.respondText("401: No autorizado. Debes iniciar sesión.", status = io.ktor.http.HttpStatusCode.Unauthorized)
+        post("/login") { /* ... */ }
+
+        authenticate("auth-session") {
+            route("/api/publicaciones") {
+                post {
+                delete("/{id}") {
             }
         }
     }

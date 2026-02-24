@@ -1,16 +1,17 @@
-package domain
+package edu.gva.es.data
 
-import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.ReferenceOption
 
-@Serializable
+object Mensajes : Table("mensajes") {
 
-data class MensajeDTO(
+    val id = integer("id_mensaje").autoIncrement()
+    val idEmisor = integer("id_emisor").references(Usuarios.id, onDelete = ReferenceOption.CASCADE)
+    val idReceptor = integer("id_receptor").references(Usuarios.id, onDelete = ReferenceOption.CASCADE)
+    val contenido = text("contenido")
+    val fecha = datetime("fecha_mensaje")
+    val leido = bool("leido").default(false)
 
-    val id: Int? = null,
-    val idEmisor: Int = 0,
-    val idReceptor: Int = 0,
-    val mensaje: String,
-    val fecha: String? = null,
-    val leido: Boolean = false
-)
-
+    override val primaryKey = PrimaryKey(id)
+}

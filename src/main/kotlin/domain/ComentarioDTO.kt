@@ -1,12 +1,18 @@
-package domain
+package edu.gva.es.data
 
-import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.ReferenceOption
 
-@Serializable
-data class ComentarioDTO(
-    val id: Int? = null,
-    val idPublicacion: Int,
-    val idUsuario: Int,
-    val texto: String,
-    val fecha: String? = null
-)
+object Comentarios : Table("comentarios") {
+
+    val id = integer("id_comentario").autoIncrement()
+    val idPublicacion = integer("id_publicacion")
+        .references(Publicaciones.id, onDelete = ReferenceOption.CASCADE)
+    val idUsuario = integer("id_usuario")
+        .references(Usuarios.id, onDelete = ReferenceOption.CASCADE)
+    val contenido = text("contenido")
+    val fecha = datetime("fecha_comentario")
+
+    override val primaryKey = PrimaryKey(id)
+}

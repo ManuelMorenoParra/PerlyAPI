@@ -1,11 +1,17 @@
-package domain
+package data
 
-import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.datetime
 
-@Serializable
-data class BloqueoDTO(
-    val id: Int? = null,
-    val idBloqueador: Int,
-    val idBloqueado: Int,
-    val fecha: String? = null
-)
+object Bloqueos : Table("bloqueos") {
+
+    val id = integer("id_bloqueo").autoIncrement()
+    val idBloqueador = integer("id_bloqueador").references(Usuarios.id)
+    val idBloqueado = integer("id_bloqueado").references(Usuarios.id)
+    val fecha = datetime("fecha_bloqueo")
+    override val primaryKey = PrimaryKey(id)
+
+    init {
+        uniqueIndex("idx_bloqueo_unico", idBloqueador, idBloqueado)
+    }
+}

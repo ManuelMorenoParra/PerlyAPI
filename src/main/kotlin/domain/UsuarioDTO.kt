@@ -1,15 +1,14 @@
-package edu.gva.es.domain
+package edu.gva.es.data
 
-import kotlinx.serialization.Serializable
-import java.time.LocalDate
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.date
 
-@Serializable
-data class UsuarioDTO(
-    val id: Int? = null,
-    val nombre: String,
-    val email: String,
-    val password: String,
-    @Serializable(with = LocalDateSerializer::class)
-    val fechaNacimiento: LocalDate?
-)
+object Usuarios : Table("usuarios") {
 
+    val id = integer("id_usuario").autoIncrement()
+    val nombre = varchar("nombre", 100)
+    val email = varchar("email", 150).uniqueIndex()
+    val password = varchar("password", 255)
+    val fechaNacimiento = date("fecha_nacimiento").nullable()
+    override val primaryKey = PrimaryKey(id)
+}

@@ -14,36 +14,42 @@ fun Route.mensajesRouting() {
 
     route("/mensajes") {
 
-        get("{idUsuario}") {
+        get("/usuario/{idUsuario}") {
             val id = call.parameters["idUsuario"]?.toIntOrNull()
             if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
+                return@get call.respond(HttpStatusCode.BadRequest, "ID de usuario inválido")
             }
 
-            call.respond(service.getMensajesUsuario(id))
+            val mensajes = service.getMensajesUsuario(id)
+            if (mensajes.isEmpty()) {
+                call.respond(HttpStatusCode.NoContent)
+            } else {
+                call.respond(HttpStatusCode.OK, mensajes)
+            }
         }
 
         post {
             try {
                 val mensaje = call.receive<MensajeDTO>()
+
+                if (mensaje.contenido.isBlank()) {
+                    return@post call.respond(HttpStatusCode.BadRequest, "El mensaje no puede estar vacío")
+                }
+
                 val idGenerado = service.enviarMensaje(mensaje)
-                call.respond(HttpStatusCode.Created, idGenerado)
+                call.respond(HttpStatusCode.Created, mapOf("id" to idGenerado))
             } catch (e: IllegalStateException) {
-                // Si saltó el bloqueo, respondemos 403 (Prohibido)
-                call.respond(HttpStatusCode.Forbidden, e.message ?: "Acceso denegado")
+
+                call.respond(HttpStatusCode.Forbidden, mapOf("error" to (e.message ?: "Acceso denegado")))
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Error al enviar mensaje")
+                call.respond(HttpStatusCode.BadRequest, "Error en el formato de la solicitud")
             }
         }
 
         put("/{id}") {
-
             val idParam = call.parameters["id"]?.toIntOrNull()
-
             if (idParam == null) {
-                call.respond(HttpStatusCode.BadRequest, "El ID debe ser un número entero válido")
-                return@put
+                return@put call.respond(HttpStatusCode.BadRequest, "El ID debe ser un número entero válido")
             }
 
             try {
@@ -51,28 +57,26 @@ fun Route.mensajesRouting() {
                 val exito = service.actualizarMensaje(idParam, dto)
 
                 if (exito) {
-                    call.respond(HttpStatusCode.OK, "Mensaje actualizado")
+                    call.respond(HttpStatusCode.OK, mapOf("message" to "Mensaje actualizado"))
                 } else {
-                    call.respond(HttpStatusCode.NotFound, "No se encontró el mensaje")
+                    call.respond(HttpStatusCode.NotFound, "No se encontró el mensaje con ID $idParam")
                 }
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Error en el formato del JSON: ${e.message}")
+                call.respond(HttpStatusCode.BadRequest, "Cuerpo JSON inválido")
             }
         }
 
-        delete("{id}") {
+        delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@delete
+                return@delete call.respond(HttpStatusCode.BadRequest, "ID requerido")
             }
 
-            val eliminado = service.eliminarMensaje(id)
-
-            if (eliminado)
-                call.respond(HttpStatusCode.OK)
-            else
-                call.respond(HttpStatusCode.NotFound)
+            if (service.eliminarMensaje(id)) {
+                call.respond(HttpStatusCode.OK, mapOf("message" to "Mensaje eliminado"))
+            } else {
+                call.respond(HttpStatusCode.NotFound, "El mensaje no existe")
+            }
         }
     }
 }

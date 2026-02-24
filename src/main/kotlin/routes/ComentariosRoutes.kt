@@ -14,51 +14,72 @@ fun Route.comentariosRouting() {
 
     route("/comentarios") {
 
-        get("{idPublicacion}") {
+        get("/publicacion/{idPublicacion}") {
             val id = call.parameters["idPublicacion"]?.toIntOrNull()
             if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
+                return@get call.respond(HttpStatusCode.BadRequest, "El ID de la publicación debe ser numérico")
             }
 
-            call.respond(service.getComentariosDePublicacion(id))
+            val lista = service.getComentariosDePublicacion(id)
+
+            if (lista.isEmpty()) {
+
+                call.respond(HttpStatusCode.NoContent)
+            } else {
+                call.respond(HttpStatusCode.OK, lista)
+            }
         }
 
         post {
-            val comentario = call.receive<ComentarioDTO>()
-            val id = service.crearComentario(comentario)
-            call.respond(HttpStatusCode.Created, mapOf("id" to id))
-        }
+            try {
+                val comentario = call.receive<ComentarioDTO>()
 
-        delete("{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@delete
+                if (comentario.contenido.isBlank()) {
+                    return@post call.respond(HttpStatusCode.BadRequest, "El contenido del comentario no puede estar vacío")
+                }
+
+                val id = service.crearComentario(comentario)
+                if (id > 0) {
+                    call.respond(HttpStatusCode.Created, mapOf("id" to id))
+                } else {
+                    call.respond(HttpStatusCode.InternalServerError, "No se pudo crear el comentario")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Error en el formato del JSON")
             }
-
-            val eliminado = service.eliminarComentario(id)
-
-            if (eliminado)
-                call.respond(HttpStatusCode.OK)
-            else
-                call.respond(HttpStatusCode.NotFound)
         }
 
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
-                call.respond(HttpStatusCode.BadRequest, "ID no válido")
-                return@put
+                return@put call.respond(HttpStatusCode.BadRequest, "ID de comentario no válido")
             }
 
-            val dto = call.receive<ComentarioDTO>()
-            val actualizado = service.actualizarComentario(id, dto)
+            try {
+                val dto = call.receive<ComentarioDTO>()
+                val actualizado = service.actualizarComentario(id, dto)
 
-            if (actualizado) {
-                call.respond(HttpStatusCode.OK, "Comentario actualizado")
+                if (actualizado) {
+                    call.respond(HttpStatusCode.OK, mapOf("message" to "Comentario actualizado con éxito"))
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "No se encontró el comentario con ID $id")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Datos de actualización inválidos")
+            }
+        }
+
+        delete("/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                return@delete call.respond(HttpStatusCode.BadRequest, "ID requerido")
+            }
+
+            if (service.eliminarComentario(id)) {
+
+                call.respond(HttpStatusCode.OK, "Comentario eliminado")
             } else {
-                call.respond(HttpStatusCode.NotFound, "No existe el comentario")
+                call.respond(HttpStatusCode.NotFound, "El comentario no existe")
             }
         }
     }

@@ -14,46 +14,56 @@ fun Route.progresoRouting() {
 
     route("/progresos") {
 
-        get("{idUsuario}") {
+        get("/usuario/{idUsuario}") {
             val id = call.parameters["idUsuario"]?.toIntOrNull()
 
             if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
+                return@get call.respond(HttpStatusCode.BadRequest, "El ID de usuario debe ser un número")
             }
 
-            call.respond(service.obtenerProgresoUsuario(id))
+            val progreso = service.obtenerProgresoUsuario(id)
+            if (progreso.isEmpty()) {
+                call.respond(HttpStatusCode.NoContent)
+            } else {
+                call.respond(HttpStatusCode.OK, progreso)
+            }
         }
 
         post {
             try {
                 val progreso = call.receive<ProgresoDTO>()
-                val id = service.registrarProgreso(progreso)
-                call.respond(HttpStatusCode.Created, mapOf("id" to id))
+
+                if (progreso.puntos < 0) {
+                    return@post call.respond(HttpStatusCode.BadRequest, "Los puntos no pueden ser negativos")
+                }
+
+                val idGenerado = service.registrarProgreso(progreso)
+                call.respond(HttpStatusCode.Created, mapOf("id" to idGenerado))
             } catch (e: Exception) {
-                // Esto te imprimirá el error real en la consola de IntelliJ
-                println("Error en POST /progreso: ${e.message}")
-                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido")
+
+                call.respond(HttpStatusCode.BadRequest, "Formato de progreso inválido")
             }
         }
 
-        get("puntos/{idUsuario}") {
+        get("/puntos/{idUsuario}") {
             val id = call.parameters["idUsuario"]?.toIntOrNull()
 
             if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
+                return@get call.respond(HttpStatusCode.BadRequest, "ID inválido")
             }
 
             val puntos = service.obtenerPuntosTotales(id)
-            call.respond(mapOf("puntosTotales" to puntos))
+
+            call.respond(HttpStatusCode.OK, mapOf(
+                "idUsuario" to id,
+                "puntosTotales" to puntos
+            ))
         }
 
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
-                call.respond(HttpStatusCode.BadRequest, "ID de progreso no válido")
-                return@put
+                return@put call.respond(HttpStatusCode.BadRequest, "ID de progreso no válido")
             }
 
             try {
@@ -61,12 +71,12 @@ fun Route.progresoRouting() {
                 val exito = service.editarProgreso(id, dto)
 
                 if (exito) {
-                    call.respond(HttpStatusCode.OK, "Progreso actualizado correctamente")
+                    call.respond(HttpStatusCode.OK, mapOf("message" to "Progreso actualizado"))
                 } else {
-                    call.respond(HttpStatusCode.NotFound, "No se encontró el progreso con ID $id")
+                    call.respond(HttpStatusCode.NotFound, "No existe el registro con ID $id")
                 }
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, "Error al actualizar: ${e.message}")
+                call.respond(HttpStatusCode.BadRequest, "Error en los datos de actualización")
             }
         }
 
@@ -74,22 +84,13 @@ fun Route.progresoRouting() {
             val id = call.parameters["id"]?.toIntOrNull()
 
             if (id == null) {
-                call.respond(HttpStatusCode.BadRequest, "ID de progreso inválido")
-                return@delete
+                return@delete call.respond(HttpStatusCode.BadRequest, "ID de progreso inválido")
             }
 
-            try {
-                // Asegúrate de que tu ProgresoService tenga una función delete(id: Int)
-                val eliminado = service.eliminarProgreso(id)
-
-                if (eliminado) {
-                    call.respond(HttpStatusCode.OK, "Progreso eliminado correctamente")
-                } else {
-                    call.respond(HttpStatusCode.NotFound, "No se encontró el progreso con ID $id")
-                }
-            } catch (e: Exception) {
-                println("Error al eliminar progreso: ${e.message}")
-                call.respond(HttpStatusCode.InternalServerError, "Error en el servidor: ${e.message}")
+            if (service.eliminarProgreso(id)) {
+                call.respond(HttpStatusCode.OK, mapOf("message" to "Registro eliminado correctamente"))
+            } else {
+                call.respond(HttpStatusCode.NotFound, "No se encontró el registro para eliminar")
             }
         }
     }

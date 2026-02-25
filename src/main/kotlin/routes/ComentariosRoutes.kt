@@ -1,13 +1,12 @@
 package edu.gva.es.routes
 
-import domain.ComentarioDTO
+import edu.gva.es.domain.ComentarioDTO
+import edu.gva.es.services.ComentariosService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import edu.gva.es.domain.*
-import services.ComentariosService
 
 fun Route.comentariosRouting() {
 
@@ -15,6 +14,7 @@ fun Route.comentariosRouting() {
 
     route("/comentarios") {
 
+        // OBTENER COMENTARIOS DE UNA PUBLICACIÓN
         get("/publicacion/{idPublicacion}") {
             val id = call.parameters["idPublicacion"]?.toIntOrNull()
             if (id == null) {
@@ -24,13 +24,13 @@ fun Route.comentariosRouting() {
             val lista = service.getComentariosDePublicacion(id)
 
             if (lista.isEmpty()) {
-
                 call.respond(HttpStatusCode.NoContent)
             } else {
                 call.respond(HttpStatusCode.OK, lista)
             }
         }
 
+        // CREAR COMENTARIO
         post {
             try {
                 val comentario = call.receive<ComentarioDTO>()
@@ -46,10 +46,11 @@ fun Route.comentariosRouting() {
                     call.respond(HttpStatusCode.InternalServerError, "No se pudo crear el comentario")
                 }
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Error en el formato del JSON")
+                call.respond(HttpStatusCode.BadRequest, "Error en el formato del JSON: ${e.message}")
             }
         }
 
+        // ACTUALIZAR COMENTARIO
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
@@ -70,6 +71,7 @@ fun Route.comentariosRouting() {
             }
         }
 
+        // ELIMINAR COMENTARIO
         delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
@@ -77,7 +79,6 @@ fun Route.comentariosRouting() {
             }
 
             if (service.eliminarComentario(id)) {
-
                 call.respond(HttpStatusCode.OK, "Comentario eliminado")
             } else {
                 call.respond(HttpStatusCode.NotFound, "El comentario no existe")

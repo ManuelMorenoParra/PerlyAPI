@@ -1,45 +1,38 @@
 package edu.gva.es.data
 
+import edu.gva.es.domain.ComentarioDTO // Import corregido
+import edu.gva.es.domain.Comentarios
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import domain.ComentarioDTO
-import java.time.LocalDateTime
-import edu.gva.es.domain.*
+import org.jetbrains.exposed.sql.transactions.transaction
 
 object ComentariosDAO {
-
-    private fun ResultRow.toDTO() = ComentarioDTO(
-        id = this[Comentarios.idComentario],
-        idPublicacion = this[Comentarios.idPublicacion],
-        idUsuario = this[Comentarios.idUsuario],
-        texto = this[Comentarios.texto],
-        fecha = this[Comentarios.fecha].toString()
-    )
-
-    fun getByPublicacion(idPub: Int): List<ComentarioDTO> = transaction {
-        Comentarios
-            .select { Comentarios.idPublicacion eq idPub }
-            .map { it.toDTO() }
-    }
-
-    fun insert(c: ComentarioDTO): Int = transaction {
+    fun insertar(dto: ComentarioDTO): Int = transaction {
         Comentarios.insert {
-            it[idPublicacion] = c.idPublicacion
-            it[idUsuario] = c.idUsuario
-            it[texto] = c.texto
-            it[fecha] = LocalDateTime.now()
-        } get Comentarios.idComentario
+            it[idPublicacion] = dto.idPublicacion
+            it[idUsuario] = dto.idUsuario
+            it[contenido] = dto.contenido
+        } get Comentarios.id
     }
 
-    fun delete(id: Int): Boolean = transaction {
-        Comentarios.deleteWhere { Comentarios.idComentario eq id } > 0
-    }
-
-    fun update(id: Int, dto: ComentarioDTO): Int = transaction {
-        Comentarios.update({ Comentarios.idComentario eq id }) {
-            it[texto] = dto.texto // Asegúrate de que tu DTO tenga la propiedad 'texto'
+    fun obtenerPorPublicacion(idPub: Int): List<ComentarioDTO> = transaction {
+        Comentarios.selectAll().where { Comentarios.idPublicacion eq idPub }.map {
+            ComentarioDTO(
+                id = it[Comentarios.id],
+                idPublicacion = it[Comentarios.idPublicacion],
+                idUsuario = it[Comentarios.idUsuario],
+                contenido = it[Comentarios.contenido]
+            )
         }
     }
-}
 
+    fun actualizar(idCom: Int, dto: ComentarioDTO): Boolean = transaction {
+        Comentarios.update({ Comentarios.id eq idCom }) {
+            it[contenido] = dto.contenido
+        } > 0
+    }
+
+    fun eliminar(idCom: Int): Boolean = transaction {
+        Comentarios.deleteWhere { id eq idCom } > 0
+    }
+}

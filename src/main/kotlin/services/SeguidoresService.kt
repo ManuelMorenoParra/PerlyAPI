@@ -6,7 +6,7 @@ import edu.gva.es.domain.SeguidorDTO
 object SeguidoresService {
     fun seguir(dto: SeguidorDTO) = SeguidoresDAO.seguir(dto)
 
-    fun dejar(usuario: Int, seguido: Int) = SeguidoresDAO.dejarDeSeguir(usuario, seguido)
+    fun dejar(usuario: Int, seguido: Int): Int = SeguidoresDAO.dejarDeSeguir(usuario, seguido)
 
     fun listar(id: Int): List<Int> = SeguidoresDAO.obtenerSeguidores(id)
 

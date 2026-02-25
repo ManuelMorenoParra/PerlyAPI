@@ -1,44 +1,49 @@
 package edu.gva.es.data
 
 import edu.gva.es.domain.SoporteDTO
+import edu.gva.es.domain.Soportes
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDateTime
-import edu.gva.es.domain.*
 
 object SoportesDAO {
-
-    fun crear(dto: SoporteDTO) = transaction {
+    fun crear(dto: SoporteDTO): Int = transaction {
         Soportes.insert {
             it[idUsuario] = dto.idUsuario
             it[asunto] = dto.asunto
-            it[descripcion] = dto.descripcion
-            it[estado] = "ABIERTO"
-            it[fechaApertura] = LocalDateTime.now()
+            it[mensaje] = dto.mensaje
+            it[estado] = dto.estado ?: "PENDIENTE"
+        } get Soportes.id
+    }
+
+    fun listarPorUsuario(idUser: Int): List<SoporteDTO> = transaction {
+        Soportes.selectAll().where { Soportes.idUsuario eq idUser }.map {
+            SoporteDTO(
+                id = it[Soportes.id],
+                idUsuario = it[Soportes.idUsuario],
+                asunto = it[Soportes.asunto],
+                mensaje = it[Soportes.mensaje],
+                estado = it[Soportes.estado]
+            )
         }
     }
 
-    fun responder(id: Int, respuesta: String) = transaction {
-        Soportes.update({ Soportes.id eq id }) {
-            it[Soportes.respuesta] = respuesta
-            it[estado] = "CERRADO"
-            it[fechaRespuesta] = LocalDateTime.now()
-        }
-    }
-
-    fun listarPorUsuario(idUsuario: Int) = transaction {
-        Soportes.selectAll()
-            .where { Soportes.idUsuario eq idUsuario }
-            .map { it[Soportes.asunto] }
-    }
-
-    fun actualizar(idSoporte: Int, dto: SoporteDTO): Boolean = transaction {
-        Soportes.update({ Soportes.id eq idSoporte }) {
-
-            it[Soportes.asunto] = dto.asunto
-            it[Soportes.descripcion] = dto.descripcion
-            it[Soportes.estado] = dto.estado
-
+    fun actualizar(idSop: Int, dto: SoporteDTO): Boolean = transaction {
+        Soportes.update({ Soportes.id eq idSop }) {
+            it[asunto] = dto.asunto
+            it[mensaje] = dto.mensaje
+            it[estado] = dto.estado ?: "PENDIENTE"
         } > 0
+    }
+
+    fun eliminar(idSop: Int): Boolean = transaction {
+        Soportes.deleteWhere { id eq idSop } > 0
+    }
+
+    fun responder(idSop: Int, respuesta: String) = transaction {
+        Soportes.update({ Soportes.id eq idSop }) {
+            it[mensaje] = it[mensaje] + "\nRESPUESTA: $respuesta"
+            it[estado] = "RESPONDIDO"
+        }
     }
 }

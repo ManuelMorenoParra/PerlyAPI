@@ -4,11 +4,12 @@ import edu.gva.es.data.LikesDAO
 import edu.gva.es.domain.LikeDTO
 
 object LikesService {
-    fun darLike(dto: LikeDTO) = LikesDAO.insertar(dto)
+    fun darLike(dto: LikeDTO): Boolean = LikesDAO.insertar(dto)
 
-    fun quitarLike(usuario: Int, pub: Int) = LikesDAO.eliminar(usuario, pub)
+    fun quitarLike(usuario: Int, pub: Int): Boolean = LikesDAO.eliminar(usuario, pub)
 
-    fun contar(pub: Int) = LikesDAO.contarLikes(pub)
+    // Nombre corregido para que la ruta lo encuentre
+    fun contarPorPublicacion(pub: Int): Long = LikesDAO.contarLikes(pub)
 
     fun actualizarLike(id: Int, dto: LikeDTO): Boolean {
         return LikesDAO.update(id, dto)

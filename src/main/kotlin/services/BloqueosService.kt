@@ -1,16 +1,11 @@
 package edu.gva.es.services
 
 import edu.gva.es.data.BloqueosDAO
-import domain.BloqueoDTO
+import edu.gva.es.domain.BloqueoDTO
 
 class BloqueosService {
-
-    fun obtenerTodos(): List<BloqueoDTO> {
-        return BloqueosDAO.getAll()
-    }
-
+    fun obtenerTodos(): List<BloqueoDTO> = BloqueosDAO.getAll()
     fun bloquearUsuario(dto: BloqueoDTO): Int = BloqueosDAO.insert(dto)
-
     fun desbloquearUsuario(idBloqueador: Int, idBloqueado: Int): Boolean =
         BloqueosDAO.delete(idBloqueador, idBloqueado)
 }

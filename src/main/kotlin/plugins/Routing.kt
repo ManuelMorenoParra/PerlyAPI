@@ -1,11 +1,9 @@
 package edu.gva.es.plugins
 
-import edu.gva.es.routes.seguidoresRouting
-import edu.gva.es.routes.usuarioRouting
+import edu.gva.es.routes.* // Importamos todo desde el paquete correcto
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import routes.*
 
 fun Application.configureRouting() {
 
@@ -18,7 +16,6 @@ fun Application.configureRouting() {
         usuarioRouting()
         retosRouting()
         publicacionesRouting()
-        mensajesRouting()
         comentariosRouting()
         progresoRouting()
         likesRouting()

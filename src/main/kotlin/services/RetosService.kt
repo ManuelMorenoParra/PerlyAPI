@@ -1,21 +1,16 @@
 package edu.gva.es.services
 
-import data.RetosDAO
-import domain.RetoDTO
+import edu.gva.es.data.RetosDAO
+import edu.gva.es.domain.RetoDTO
 
 object RetosService {
-
     fun getAllRetos(): List<RetoDTO> = RetosDAO.obtenerTodos()
 
     fun getRetoById(id: Int): RetoDTO? = RetosDAO.obtenerPorId(id)
 
-    fun createReto(reto: RetoDTO): RetoDTO = RetosDAO.crearReto(reto)
+    fun createReto(dto: RetoDTO): Int = RetosDAO.insertar(dto)
 
-    fun updateReto(id: Int, reto: RetoDTO): Boolean {
+    fun updateReto(id: Int, dto: RetoDTO): Boolean = RetosDAO.actualizar(id, dto)
 
-        val retoConId = reto.copy(id = id)
-        return RetosDAO.actualizarReto(retoConId)
-    }
-
-    fun deleteReto(id: Int): Boolean = RetosDAO.eliminarReto(id)
+    fun deleteReto(id: Int): Boolean = RetosDAO.eliminar(id)
 }

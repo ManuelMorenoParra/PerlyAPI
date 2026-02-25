@@ -1,28 +1,21 @@
 package edu.gva.es.services
 
-import data.ProgresoDAO
-import domain.ProgresoDTO
+import edu.gva.es.data.ProgresoDAO
+import edu.gva.es.domain.ProgresoDTO
 
-class ProgresoService {
+class ProgresosService {
+    fun obtenerProgresoUsuario(idUsuario: Int): List<ProgresoDTO> =
+        ProgresoDAO.obtenerPorUsuario(idUsuario)
 
-    private val dao = ProgresoDAO()
+    fun registrarProgreso(dto: ProgresoDTO): Int =
+        ProgresoDAO.insertar(dto)
 
-    fun obtenerProgresoUsuario(idUsuario: Int) = dao.getByUsuario(idUsuario)
+    fun obtenerPuntosTotales(idUsuario: Int): Int =
+        ProgresoDAO.sumarPuntosUsuario(idUsuario)
 
-    fun registrarProgreso(progreso: ProgresoDTO): Int {
-        if (dao.yaCompletado(progreso.idUsuario, progreso.idReto)) {
-            throw Exception("Este reto ya fue completado por el usuario")
-        }
-        return dao.insert(progreso)
-    }
+    fun editarProgreso(id: Int, dto: ProgresoDTO): Boolean =
+        ProgresoDAO.actualizar(id, dto)
 
-    fun obtenerPuntosTotales(idUsuario: Int) = dao.totalPuntosUsuario(idUsuario)
-
-    fun eliminarProgreso(id: Int): Boolean {
-        return dao.delete(id) > 0
-    }
-
-    fun editarProgreso(id: Int, dto: ProgresoDTO): Boolean {
-        return dao.actualizar(id, dto)
-    }
+    fun eliminarProgreso(id: Int): Boolean =
+        ProgresoDAO.eliminar(id)
 }

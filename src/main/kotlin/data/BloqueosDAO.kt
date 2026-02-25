@@ -1,47 +1,32 @@
 package edu.gva.es.data
 
-import edu.gva.es.domain.BloqueoDTO
+import edu.gva.es.domain.BloqueoDTO // Import corregido
+import edu.gva.es.domain.Bloqueos
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDateTime
-import edu.gva.es.domain.*
 
 object BloqueosDAO {
-
-    // Bloquear a alguien
-    fun insert(bloqueo: BloqueoDTO): Int = transaction {
+    fun insertar(dto: BloqueoDTO): Int = transaction {
         Bloqueos.insert {
-            it[idBloqueador] = bloqueo.idBloqueador
-            it[idBloqueado] = bloqueo.idBloqueado
+            it[idBloqueador] = dto.idBloqueador
+            it[idBloqueado] = dto.idBloqueado
         } get Bloqueos.id
     }
 
-    // Desbloquear (Borrar la fila)
-    fun delete(bloqueador: Int, bloqueado: Int): Boolean = transaction {
+    fun eliminar(bloqueador: Int, bloqueado: Int): Boolean = transaction {
         Bloqueos.deleteWhere {
-            (Bloqueos.idBloqueador eq bloqueador) and (Bloqueos.idBloqueado eq bloqueado)
+            (idBloqueador eq bloqueador) and (idBloqueado eq bloqueado)
         } > 0
     }
 
-    // Comprobar si A tiene bloqueado a B
-    fun estaBloqueado(idBloqueador: Int, idBloqueado: Int): Boolean = transaction {
-        Bloqueos.selectAll()
-            .where { (Bloqueos.idBloqueador eq idBloqueador) and (Bloqueos.idBloqueado eq idBloqueado) }
-            .count() > 0
-    }
-
-    fun getAll(): List<BloqueoDTO> = transaction {
+    fun obtenerTodos(): List<BloqueoDTO> = transaction {
         Bloqueos.selectAll().map {
-            BloqueoDTO(it[Bloqueos.id], it[Bloqueos.idBloqueador], it[Bloqueos.idBloqueado])
+            BloqueoDTO(
+                id = it[Bloqueos.id],
+                idBloqueador = it[Bloqueos.idBloqueador],
+                idBloqueado = it[Bloqueos.idBloqueado]
+            )
         }
     }
-
-    fun bloquearUsuario(dto: BloqueoDTO): Int = BloqueosDAO.insert(dto)
-
-    fun desbloquearUsuario(idBloqueador: Int, idBloqueado: Int): Boolean =
-        BloqueosDAO.delete(idBloqueador, idBloqueado)
-
-    fun obtenerTodos() = BloqueosDAO.getAll()
 }

@@ -1,87 +1,38 @@
 package edu.gva.es.routes
 
-import io.ktor.server.routing.*
-import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.request.*
+import edu.gva.es.domain.RetoDTO
+import edu.gva.es.services.RetosService
 import io.ktor.http.*
-import services.RetosService
-import domain.RetoDTO
-import edu.gva.es.domain.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 
 fun Route.retosRouting() {
-
     route("/retos") {
-
-        get {
-            val retos = RetosService.getAllRetos()
-            if (retos.isEmpty()) {
-                call.respond(HttpStatusCode.NoContent)
-            } else {
-                call.respond(HttpStatusCode.OK, retos)
-            }
-        }
+        get { call.respond(RetosService.getAllRetos()) }
 
         get("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
-                return@get call.respond(HttpStatusCode.BadRequest, "El ID debe ser un número entero")
-            }
-
+            val id = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
             val reto = RetosService.getRetoById(id)
-            if (reto == null) {
-                call.respond(HttpStatusCode.NotFound, "No se ha encontrado el reto con ID $id")
-            } else {
-                call.respond(HttpStatusCode.OK, reto)
-            }
+            if (reto != null) call.respond(reto) else call.respond(HttpStatusCode.NotFound)
         }
 
         post {
-            try {
-                val request = call.receive<RetoDTO>()
-
-                if (request.nombre.isBlank()) {
-                    return@post call.respond(HttpStatusCode.BadRequest, "El nombre del reto es obligatorio")
-                }
-
-                val nuevoRetoId = RetosService.createReto(request)
-                call.respond(HttpStatusCode.Created, mapOf("id" to nuevoRetoId))
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Formato de JSON incorrecto")
-            }
+            val request = call.receive<RetoDTO>()
+            val nuevo = RetosService.createReto(request)
+            call.respond(HttpStatusCode.Created, nuevo)
         }
 
         put("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
-                return@put call.respond(HttpStatusCode.BadRequest, "ID inválido")
-            }
-
-            try {
-                val request = call.receive<RetoDTO>()
-                val updated = RetosService.updateReto(id, request)
-
-                if (updated) {
-                    call.respond(HttpStatusCode.OK, mapOf("message" to "Reto actualizado correctamente"))
-                } else {
-                    call.respond(HttpStatusCode.NotFound, "No se pudo actualizar: el reto no existe")
-                }
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Datos de actualización inválidos")
-            }
+            val id = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val request = call.receive<RetoDTO>()
+            if (RetosService.updateReto(id, request)) call.respond(HttpStatusCode.OK) else call.respond(HttpStatusCode.NotFound)
         }
 
         delete("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
-                return@delete call.respond(HttpStatusCode.BadRequest, "ID inválido")
-            }
-
-            if (RetosService.deleteReto(id)) {
-                call.respond(HttpStatusCode.OK, mapOf("message" to "Reto eliminado exitosamente"))
-            } else {
-                call.respond(HttpStatusCode.NotFound, "El reto no existe o ya fue eliminado")
-            }
+            val id = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
+            if (RetosService.deleteReto(id)) call.respond(HttpStatusCode.OK) else call.respond(HttpStatusCode.NotFound)
         }
     }
 }

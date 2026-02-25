@@ -1,65 +1,47 @@
 package edu.gva.es.data
 
-import domain.ProgresoDTO
+import edu.gva.es.domain.ProgresoDTO
+import edu.gva.es.domain.Progresos
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq // Importante para deleteWhere
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDate
-import data.Progreso
+import java.time.LocalDateTime
 import edu.gva.es.domain.*
 
-class ProgresoDAO {
-
-    fun getByUsuario(idUsuario: Int): List<ProgresoDTO> = transaction {
-        Progreso.selectAll() // Cambiado select por selectAll().where en versiones nuevas de Exposed
-            .where { Progreso.idUsuario eq idUsuario }
-            .map {
-                ProgresoDTO(
-                    id = it[Progreso.id],
-                    idUsuario = it[Progreso.idUsuario],
-                    idReto = it[Progreso.idReto],
-                    puntosGanados = it[Progreso.puntosGanados],
-                    fecha = it[Progreso.fecha].toString(),
-                    completado = it[Progreso.completado]
-                )
-            }
+object ProgresosDAO {
+    fun getByUsuario(idUser: Int): List<ProgresoDTO> = transaction {
+        Progresos.selectAll().where { Progresos.idUsuario eq idUser }.map {
+            ProgresoDTO(it[Progresos.id], it[Progresos.idUsuario], it[Progresos.idReto], it[Progresos.puntosGanados], it[Progresos.fecha].toString(), it[Progresos.completado])
+        }
     }
 
-    fun insert(progreso: ProgresoDTO): Int = transaction {
-        Progreso.insert {
-            it[idUsuario] = progreso.idUsuario
-            it[idReto] = progreso.idReto
-            it[puntosGanados] = progreso.puntosGanados
-            it[fecha] = LocalDate.now()
-            it[completado] = progreso.completado
-        } get Progreso.id
+    fun insert(p: ProgresoDTO): Int = transaction {
+        Progresos.insert {
+            it[idUsuario] = p.idUsuario
+            it[idReto] = p.idReto
+            it[puntosGanados] = p.puntosGanados
+            it[fecha] = LocalDateTime.now()
+            it[completado] = p.completado
+        } get Progresos.id
     }
 
-    fun yaCompletado(idUsuario: Int, idReto: Int): Boolean = transaction {
-        Progreso.selectAll()
-            .where { (Progreso.idUsuario eq idUsuario) and (Progreso.idReto eq idReto) }
-            .count() > 0
+    fun yaCompletado(idUser: Int, idR: Int): Boolean = transaction {
+        Progresos.selectAll().where { (Progresos.idUsuario eq idUser) and (Progresos.idReto eq idR) }.count() > 0
     }
 
-    fun totalPuntosUsuario(idUsuario: Int): Int = transaction {
-        Progreso.slice(Progreso.puntosGanados.sum())
-            .selectAll()
-            .where { Progreso.idUsuario eq idUsuario }
-            .map { it[Progreso.puntosGanados.sum()] ?: 0 }
-            .first()
+    fun totalPuntosUsuario(idUser: Int): Int = transaction {
+        val sumExp = Progresos.puntosGanados.sum()
+        Progresos.select(sumExp).where { Progresos.idUsuario eq idUser }.map { it[sumExp] ?: 0 }.firstOrNull() ?: 0
     }
 
-    fun delete(idProgreso: Int): Int = transaction {
-        Progreso.deleteWhere { Progreso.id eq idProgreso }
-    }
-
-    fun actualizar(idProgreso: Int, dto: ProgresoDTO): Boolean = transaction {
-        Progreso.update({ Progreso.id eq idProgreso }) {
-            it[idUsuario] = dto.idUsuario
-            it[idReto] = dto.idReto
-            it[puntosGanados] = dto.puntosGanados
-            it[fecha] = LocalDate.parse(dto.fecha)
-            it[completado] = dto.completado
+    fun actualizar(idProg: Int, p: ProgresoDTO): Boolean = transaction {
+        Progresos.update({ Progresos.id eq idProg }) {
+            it[puntosGanados] = p.puntosGanados
+            it[completado] = p.completado
         } > 0
+    }
+
+    fun delete(idProg: Int): Int = transaction {
+        Progresos.deleteWhere { id eq idProg }
     }
 }

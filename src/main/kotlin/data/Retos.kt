@@ -1,12 +1,14 @@
 package edu.gva.es.data
+
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.date
-import org.jetbrains.exposed.sql.javatime.datetime
 
 object Retos : Table("retos") {
-    val id_reto = integer("id_reto").autoIncrement()
-    val titulo = varchar("titulo", 100)
+    val id = integer("id").autoIncrement() // Según script SQL es "id"
+    val titulo = varchar("titulo", 255)
     val descripcion = text("descripcion")
-    val puntos = integer("puntos")
-    override val primaryKey = PrimaryKey(id_reto)
+    val categoria = varchar("categoria", 50) // 'mental', 'physical', etc.
+    val puntos = integer("puntos").default(0)
+    val esDiario = bool("es_diario").default(false)
+
+    override val primaryKey = PrimaryKey(id)
 }

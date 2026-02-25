@@ -3,6 +3,7 @@ package edu.gva.es
 import edu.gva.es.core.ConexionDB
 import edu.gva.es.data.*
 import edu.gva.es.domain.*
+import edu.gva.es.plugins.configureCORS
 import edu.gva.es.plugins.configureRouting
 import edu.gva.es.plugins.configureSecurity
 import edu.gva.es.plugins.configureSerialization
@@ -41,4 +42,5 @@ fun Application.module() {
     configureSerialization()
     configureSecurity()
     configureRouting()
+    configureCORS()
 }

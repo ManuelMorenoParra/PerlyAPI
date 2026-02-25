@@ -172,3 +172,10 @@ La API estará disponible en:
 ```
 http://127.0.0.1:8080
 ```
+
+Opción 2: Configura JAVA_HOME en esta sesión (Rápida)
+Si la opción 1 falla, pega este comando en tu terminal (ajustado a la ruta que aparecía en tu log anterior) antes de ejecutar el comando de Gradle:
+
+$env:JAVA_HOME = "C:\Users\manmorpar\.jdks\ms-21.0.10"
+$env:Path += ";$env:JAVA_HOME\bin"
+./gradlew shadowJar

@@ -6,7 +6,7 @@ import edu.gva.es.data.*
 
 object ConexionDB {
 
-    private const val HOST = "127.0.0.1"
+    private const val HOST = "192.168.3.128"
     private const val PORT = 3306
     private const val DATABASE = "proyecto"
     private const val USER = "dam"

@@ -8,7 +8,7 @@ object ConexionDB {
 
     private const val HOST = "192.168.3.128"
     private const val PORT = 3306
-    private const val DATABASE = "proyecto"
+    private const val DATABASE = "pearlyDB"
     private const val USER = "dam"
     private const val PASSWORD = "Dam2526"
 

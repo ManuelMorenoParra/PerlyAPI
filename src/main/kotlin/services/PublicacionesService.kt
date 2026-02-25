@@ -16,6 +16,6 @@ class PublicacionesService {
 
     fun editarPublicacion(id: Int, dto: PublicacionesDTO): Boolean {
         // Asegúrate de que PublicacionesDAO tenga el método actualizar corregido con Publicaciones.id
-        return PublicacionesDAO.actualizar(id, dto)
+        return PublicacionesDAO.update(id, dto)
     }
 }

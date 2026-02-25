@@ -7,8 +7,8 @@ import edu.gva.es.domain.*
 object Bloqueos : Table("bloqueos") {
     val id = integer("id_bloqueo").autoIncrement()
     // Referenciamos id_usuario de la tabla Usuarios
-    val idBloqueador = integer("id_usuario_bloqueador").references(Usuarios.idUsuario)
-    val idBloqueado = integer("id_usuario_bloqueado").references(Usuarios.idUsuario)
+    val idBloqueador = integer("id_usuario_bloqueador").references(Usuarios.id)
+    val idBloqueado = integer("id_usuario_bloqueado").references(Usuarios.id)
 
     override val primaryKey = PrimaryKey(id)
 }

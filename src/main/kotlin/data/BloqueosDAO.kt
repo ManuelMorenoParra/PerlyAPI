@@ -21,7 +21,7 @@ object BloqueosDAO {
 
     fun getAll(): List<BloqueosDTO> = transaction {
         Bloqueos.selectAll().map {
-            edu.gva.es.data.Bloqueos(
+            BloqueosDTO(
                 id = it[Bloqueos.id],
                 idBloqueador = it[Bloqueos.idBloqueador],
                 idBloqueado = it[Bloqueos.idBloqueado]

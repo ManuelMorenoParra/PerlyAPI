@@ -1,7 +1,6 @@
 package edu.gva.es.data
 
 import edu.gva.es.domain.UsuariosDTO
-import edu.gva.es.domain.Usuarios
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction

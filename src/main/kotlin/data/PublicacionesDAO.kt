@@ -20,11 +20,24 @@ object PublicacionesDAO {
         Publicaciones.insert {
             it[idUsuario] = dto.idUsuario
             it[texto] = dto.texto
-            // it[fecha] = ... // Aquí deberías asignar la fecha actual si no es automática
+            // it[fecha] = LocalDateTime.now()
             if (dto.imagen != null) {
                 it[imagen] = ExposedBlob(dto.imagen)
             }
         } get Publicaciones.id
+    }
+
+    fun delete(idPub: Int): Boolean = transaction {
+        Publicaciones.deleteWhere { id eq idPub } > 0
+    }
+
+    fun update(idPub: Int, dto: PublicacionesDTO): Boolean = transaction {
+        Publicaciones.update({ Publicaciones.id eq idPub }) {
+            it[texto] = dto.texto
+            if (dto.imagen != null) {
+                it[imagen] = ExposedBlob(dto.imagen)
+            }
+        } > 0
     }
 
     private fun rowToDto(it: ResultRow) = PublicacionesDTO(

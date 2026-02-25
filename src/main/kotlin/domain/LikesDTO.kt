@@ -1,16 +1,11 @@
 package edu.gva.es.domain
 
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.ReferenceOption
+import kotlinx.serialization.Serializable
 
-object Likes : Table("likes") {
+@Serializable
 
-    val idUsuario = integer("id_usuario")
-        .references(Usuarios.id, onDelete = ReferenceOption.CASCADE)
-    val idPublicacion = integer("id_publicacion")
-        .references(Publicaciones.id, onDelete = ReferenceOption.CASCADE)
-    val fecha = datetime("fecha_like")
-
-    override val primaryKey = PrimaryKey(idUsuario, idPublicacion)
-}
+data class LikesDTO(
+    val id: Int? = null,
+    val idUsuario: Int,
+    val idPublicacion: Int
+)

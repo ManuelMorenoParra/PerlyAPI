@@ -16,14 +16,14 @@ fun Route.usuarioRouting() {
         get { call.respond(service.listarUsuarios()) }
 
         post {
-            val user = call.receive<UsuarioDTO>()
+            val user = call.receive<UsuariosDTO>()
             val id = service.registrarUsuario(user)
             if (id != -1) call.respond(HttpStatusCode.Created, id) else call.respond(HttpStatusCode.Conflict)
         }
 
         delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
-            service.eliminar(id)
+            service.eliminarUsuarioCompleto(id)
             call.respond(HttpStatusCode.OK)
         }
 

@@ -1,13 +1,12 @@
 package edu.gva.es.data
 
-import edu.gva.es.domain.SeguidorDTO
-import edu.gva.es.domain.Seguidores
+import edu.gva.es.domain.SeguidoresDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SeguidoresDAO {
-    fun seguir(dto: SeguidorDTO) = transaction {
+    fun seguir(dto: SeguidoresDTO) = transaction {
         Seguidores.insert {
             it[idUsuario] = dto.idUsuario
             it[idSeguido] = dto.idSeguido
@@ -23,7 +22,7 @@ object SeguidoresDAO {
             .map { it[Seguidores.idUsuario] }
     }
 
-    fun actualizar(idReg: Int, dto: SeguidorDTO): Boolean = transaction {
+    fun actualizar(idReg: Int, dto: SeguidoresDTO): Boolean = transaction {
         Seguidores.update({ Seguidores.id eq idReg }) {
             it[idUsuario] = dto.idUsuario
             it[idSeguido] = dto.idSeguido

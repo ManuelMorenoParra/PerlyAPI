@@ -1,22 +1,28 @@
 package edu.gva.es.data
 
-import edu.gva.es.domain.ProgresoDTO
-import edu.gva.es.domain.Progresos
+import edu.gva.es.domain.ProgresosDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
-import edu.gva.es.domain.*
 
 object ProgresosDAO {
-    fun getByUsuario(idUser: Int): List<ProgresoDTO> = transaction {
+    fun getByUsuario(idUser: Int): List<ProgresosDTO> = transaction {
         Progresos.selectAll().where { Progresos.idUsuario eq idUser }.map {
-            ProgresoDTO(it[Progresos.id], it[Progresos.idUsuario], it[Progresos.idReto], it[Progresos.puntosGanados], it[Progresos.fecha].toString(), it[Progresos.completado])
+            ProgresosDTO(
+                id = it[Progresos.id],
+                idUsuario = it[Progresos.idUsuario],
+                idReto = it[Progresos.idReto],
+                puntosGanados = it[Progresos.puntosGanados],
+                fecha = it[Progresos.fecha].toString(),
+                completado = it[Progresos.completado]
+            )
         }
     }
 
-    fun insert(p: ProgresoDTO): Int = transaction {
+    fun insert(p: ProgresosDTO): Int = transaction {
         Progresos.insert {
+
             it[idUsuario] = p.idUsuario
             it[idReto] = p.idReto
             it[puntosGanados] = p.puntosGanados
@@ -31,17 +37,21 @@ object ProgresosDAO {
 
     fun totalPuntosUsuario(idUser: Int): Int = transaction {
         val sumExp = Progresos.puntosGanados.sum()
-        Progresos.select(sumExp).where { Progresos.idUsuario eq idUser }.map { it[sumExp] ?: 0 }.firstOrNull() ?: 0
+
+        Progresos.select(sumExp)
+            .where { Progresos.idUsuario eq idUser }
+            .map { it[sumExp] ?: 0 }
+            .firstOrNull() ?: 0
     }
 
-    fun actualizar(idProg: Int, p: ProgresoDTO): Boolean = transaction {
+    fun actualizar(idProg: Int, p: ProgresosDTO): Boolean = transaction {
         Progresos.update({ Progresos.id eq idProg }) {
             it[puntosGanados] = p.puntosGanados
             it[completado] = p.completado
         } > 0
     }
 
-    fun delete(idProg: Int): Int = transaction {
-        Progresos.deleteWhere { id eq idProg }
+    fun delete(idProg: Int): Boolean = transaction {
+        Progresos.deleteWhere { id eq idProg } > 0
     }
 }

@@ -1,13 +1,9 @@
 package edu.gva.es.domain
 
-import org.jetbrains.exposed.sql.Table
+import kotlinx.serialization.Serializable
 
-object Usuarios : Table("usuarios") {
-
-    val id = integer("id_usuario").autoIncrement()
-    val email = varchar("email", 100).uniqueIndex()
-    val password = varchar("password", 255)
-    val nombre = varchar("nombre", 50)
-
-    override val primaryKey = PrimaryKey(id)
-}
+@Serializable
+data class LoginRequest(
+    val email: String,
+    val password: String
+)

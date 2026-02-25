@@ -3,7 +3,7 @@ package edu.gva.es.domain
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
 
-object Bloqueos : Table("bloqueos") {
+object BloqueosDTO : Table("bloqueos") {
 
     val id = integer("id_bloqueo").autoIncrement()
     val idBloqueador = integer("id_bloqueador").references(Usuarios.id)

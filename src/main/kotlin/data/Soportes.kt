@@ -9,7 +9,6 @@ object Soportes : Table("soporte") {
     val idUsuario = integer("id_usuario")
     val asunto = varchar("asunto", 100)
     val descripcion = text("descripcion")
-    val estado = varchar("estado", 50)
     val respuesta = text("respuesta").nullable()
     val fechaApertura = datetime("fecha_apertura")
     val fechaRespuesta = datetime("fecha_respuesta").nullable()

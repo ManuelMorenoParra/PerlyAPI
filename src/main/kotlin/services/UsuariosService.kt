@@ -1,5 +1,10 @@
 package edu.gva.es.services
 
+import edu.gva.es.data.Likes
+import edu.gva.es.data.Publicaciones
+import edu.gva.es.data.Seguidores
+import edu.gva.es.data.Soportes
+import edu.gva.es.data.Usuarios
 import edu.gva.es.data.UsuariosDAO
 import edu.gva.es.domain.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -8,17 +13,17 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.or
 
 object UsuariosService {
-    fun listarUsuarios(): List<UsuarioDTO> = UsuariosDAO.seleccionarTodos()
-    fun buscarPorId(id: Int): UsuarioDTO? = UsuariosDAO.seleccionarPorId(id)
+    fun listarUsuarios(): List<UsuariosDTO> = UsuariosDAO.seleccionarTodos()
+    fun buscarPorId(id: Int): UsuariosDTO? = UsuariosDAO.seleccionarPorId(id)
 
-    fun registrarUsuario(usuario: UsuarioDTO): Int {
+    fun registrarUsuario(usuario: UsuariosDTO): Int {
         val existe = UsuariosDAO.seleccionarPorEmail(usuario.email) != null
         if (existe) return -1
         return UsuariosDAO.insertar(usuario)
     }
 
     fun eliminarUsuarioCompleto(idUsuarioParam: Int) = transaction {
-        // Usamos los nombres de tablas tal cual los tienes en edu.gva.es.domain
+
         Publicaciones.deleteWhere { Publicaciones.idUsuario eq idUsuarioParam }
         Soportes.deleteWhere { Soportes.idUsuario eq idUsuarioParam }
         Likes.deleteWhere { Likes.idUsuario eq idUsuarioParam }

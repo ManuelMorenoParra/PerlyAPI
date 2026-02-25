@@ -1,6 +1,6 @@
 package edu.gva.es.routes
 
-import edu.gva.es.domain.ComentarioDTO
+import edu.gva.es.domain.ComentariosDTO
 import edu.gva.es.services.ComentariosService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -18,25 +18,29 @@ fun Route.comentariosRouting() {
         get("/publicacion/{idPublicacion}") {
             val id = call.parameters["idPublicacion"]?.toIntOrNull()
             if (id == null) {
-                return@get call.respond(HttpStatusCode.BadRequest, "El ID de la publicación debe ser numérico")
+                call.respond(HttpStatusCode.BadRequest, "El ID de la publicación debe ser numérico")
+                return@get
             }
 
-            val lista = service.getComentariosDePublicacion(id)
+            val lista: List<ComentariosDTO> = service.getComentariosDePublicacion(id)
 
             if (lista.isEmpty()) {
                 call.respond(HttpStatusCode.NoContent)
             } else {
-                call.respond(HttpStatusCode.OK, lista)
+                // Especificamos explícitamente el tipo de respuesta para evitar errores de inferencia
+                call.respond<List<ComentariosDTO>>(HttpStatusCode.OK, lista)
             }
         }
 
         // CREAR COMENTARIO
         post {
             try {
-                val comentario = call.receive<ComentarioDTO>()
+                // Especificar explícitamente el tipo en receive ayuda al compilador
+                val comentario = call.receive<ComentariosDTO>()
 
                 if (comentario.contenido.isBlank()) {
-                    return@post call.respond(HttpStatusCode.BadRequest, "El contenido del comentario no puede estar vacío")
+                    call.respond(HttpStatusCode.BadRequest, "El contenido del comentario no puede estar vacío")
+                    return@post
                 }
 
                 val id = service.crearComentario(comentario)
@@ -54,11 +58,12 @@ fun Route.comentariosRouting() {
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
-                return@put call.respond(HttpStatusCode.BadRequest, "ID de comentario no válido")
+                call.respond(HttpStatusCode.BadRequest, "ID de comentario no válido")
+                return@put
             }
 
             try {
-                val dto = call.receive<ComentarioDTO>()
+                val dto = call.receive<ComentariosDTO>()
                 val actualizado = service.actualizarComentario(id, dto)
 
                 if (actualizado) {
@@ -75,7 +80,8 @@ fun Route.comentariosRouting() {
         delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
-                return@delete call.respond(HttpStatusCode.BadRequest, "ID requerido")
+                call.respond(HttpStatusCode.BadRequest, "ID requerido")
+                return@delete
             }
 
             if (service.eliminarComentario(id)) {

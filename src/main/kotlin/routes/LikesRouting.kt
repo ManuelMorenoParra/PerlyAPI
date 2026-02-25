@@ -1,6 +1,6 @@
 package edu.gva.es.routes
 
-import edu.gva.es.domain.LikeDTO
+import edu.gva.es.domain.LikesDTO
 import edu.gva.es.services.LikesService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -15,9 +15,8 @@ fun Route.likesRouting() {
 
         post {
             try {
-                val dto = call.receive<LikeDTO>()
+                val dto = call.receive<LikesDTO>()
 
-                // Validación de entrada básica
                 if (dto.idUsuario <= 0 || dto.idPublicacion <= 0) {
                     return@post call.respond(HttpStatusCode.BadRequest, "Los IDs de usuario y publicación deben ser válidos")
                 }
@@ -69,14 +68,12 @@ fun Route.likesRouting() {
             call.respond(HttpStatusCode.OK, mapOf("idPublicacion" to idPub, "total" to total))
         }
 
-        // El método PUT en likes es inusual (un like se da o se quita),
-        // pero lo dejamos con semántica robusta.
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
                 ?: return@put call.respond(HttpStatusCode.BadRequest, "ID inválido")
 
             try {
-                val dto = call.receive<LikeDTO>()
+                val dto = call.receive<LikesDTO>()
                 val actualizado = LikesService.actualizarLike(id, dto)
 
                 if (actualizado) {

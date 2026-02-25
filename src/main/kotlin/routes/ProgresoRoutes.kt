@@ -1,6 +1,6 @@
 package edu.gva.es.routes
 
-import edu.gva.es.domain.ProgresoDTO
+import edu.gva.es.domain.ProgresosDTO
 import edu.gva.es.services.ProgresosService // Nombre corregido
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -18,7 +18,7 @@ fun Route.progresoRouting() {
         }
 
         post {
-            val dto = call.receive<ProgresoDTO>()
+            val dto = call.receive<ProgresosDTO>()
             val id = service.registrarProgreso(dto)
             call.respond(HttpStatusCode.Created, mapOf("id" to id))
         }
@@ -35,7 +35,7 @@ fun Route.progresoRouting() {
 
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val dto = call.receive<ProgresoDTO>()
+            val dto = call.receive<ProgresosDTO>()
             if (service.editarProgreso(id, dto)) call.respond(HttpStatusCode.OK) else call.respond(HttpStatusCode.NotFound)
         }
     }

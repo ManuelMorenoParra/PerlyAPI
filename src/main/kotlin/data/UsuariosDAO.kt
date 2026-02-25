@@ -1,33 +1,33 @@
 package edu.gva.es.data
 
-import edu.gva.es.domain.UsuarioDTO
+import edu.gva.es.domain.UsuariosDTO
 import edu.gva.es.domain.Usuarios
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import edu.gva.es.domain.*
 
 object UsuariosDAO {
-    private fun ResultRow.toDTO() = UsuarioDTO(
+
+    private fun ResultRow.toDTO() = UsuariosDTO(
         id = this[Usuarios.id],
         nombre = this[Usuarios.nombre],
         email = this[Usuarios.email],
         password = this[Usuarios.password]
     )
 
-    fun seleccionarTodos(): List<UsuarioDTO> = transaction {
+    fun seleccionarTodos(): List<UsuariosDTO> = transaction {
         Usuarios.selectAll().map { it.toDTO() }
     }
 
-    fun seleccionarPorId(id: Int): UsuarioDTO? = transaction {
+    fun seleccionarPorId(id: Int): UsuariosDTO? = transaction {
         Usuarios.selectAll().where { Usuarios.id eq id }.map { it.toDTO() }.singleOrNull()
     }
 
-    fun seleccionarPorEmail(email: String): UsuarioDTO? = transaction {
+    fun seleccionarPorEmail(email: String): UsuariosDTO? = transaction {
         Usuarios.selectAll().where { Usuarios.email eq email }.map { it.toDTO() }.singleOrNull()
     }
 
-    fun insertar(u: UsuarioDTO): Int = transaction {
+    fun insertar(u: UsuariosDTO): Int = transaction {
         Usuarios.insert {
             it[nombre] = u.nombre
             it[email] = u.email
@@ -35,7 +35,7 @@ object UsuariosDAO {
         } get Usuarios.id
     }
 
-    fun actualizar(idUsuario: Int, u: UsuarioDTO): Int = transaction {
+    fun actualizar(idUsuario: Int, u: UsuariosDTO): Int = transaction {
         Usuarios.update({ Usuarios.id eq idUsuario }) {
             it[nombre] = u.nombre
             it[email] = u.email
@@ -44,6 +44,7 @@ object UsuariosDAO {
     }
 
     fun eliminar(idUsuario: Int): Int = transaction {
-        Usuarios.deleteWhere { id eq idUsuario }
+
+        Usuarios.deleteWhere { Usuarios.id eq idUsuario }
     }
 }

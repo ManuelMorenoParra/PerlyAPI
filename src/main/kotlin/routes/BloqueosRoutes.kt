@@ -1,6 +1,6 @@
 package edu.gva.es.routes
 
-import edu.gva.es.domain.BloqueoDTO
+import edu.gva.es.domain.BloqueosDTO
 import edu.gva.es.services.BloqueosService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -23,7 +23,7 @@ fun Route.bloqueosRouting() {
 
         post {
             try {
-                val dto = call.receive<BloqueoDTO>()
+                val dto = call.receive<BloqueosDTO>()
                 if (dto.idBloqueador == dto.idBloqueado) {
                     return@post call.respond(HttpStatusCode.BadRequest, "No puedes bloquearte a ti mismo")
                 }

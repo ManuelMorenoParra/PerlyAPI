@@ -1,6 +1,6 @@
 package edu.gva.es.routes
 
-import edu.gva.es.domain.SeguidorDTO
+import edu.gva.es.domain.SeguidoresDTO
 import edu.gva.es.services.SeguidoresService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -14,9 +14,9 @@ fun Route.seguidoresRouting() {
 
         post {
             try {
-                val dto = call.receive<SeguidorDTO>()
+                val dto = call.receive<SeguidoresDTO>()
 
-                if (dto.idSeguidor == dto.idSeguido) {
+                if (dto.id == dto.idSeguido) {
                     return@post call.respond(HttpStatusCode.BadRequest, "Un usuario no puede seguirse a sí mismo")
                 }
 
@@ -69,7 +69,7 @@ fun Route.seguidoresRouting() {
                 ?: return@put call.respond(HttpStatusCode.BadRequest, "ID no válido")
 
             try {
-                val dto = call.receive<SeguidorDTO>()
+                val dto = call.receive<SeguidoresDTO>()
                 val actualizado = SeguidoresService.editarSeguimiento(id, dto)
 
                 if (actualizado) {

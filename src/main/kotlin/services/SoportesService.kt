@@ -1,16 +1,16 @@
 package edu.gva.es.services
 
 import edu.gva.es.data.SoportesDAO
-import edu.gva.es.domain.SoporteDTO
+import edu.gva.es.domain.SoportesDTO
 
 object SoportesService {
-    fun crear(dto: SoporteDTO): Int = SoportesDAO.crear(dto)
+    fun crear(dto: SoportesDTO): Int = SoportesDAO.crear(dto)
 
     fun responder(id: Int, r: String) = SoportesDAO.responder(id, r)
 
-    fun listarPorUsuario(idUsuario: Int): List<SoporteDTO> = SoportesDAO.listarPorUsuario(idUsuario)
+    fun listarPorUsuario(idUsuario: Int): List<SoportesDTO> = SoportesDAO.listarPorUsuario(idUsuario)
 
-    fun editarSoporte(id: Int, dto: SoporteDTO): Boolean {
+    fun editarSoporte(id: Int, dto: SoportesDTO): Boolean {
         return SoportesDAO.actualizar(id, dto)
     }
 

@@ -1,51 +1,50 @@
 package edu.gva.es.data
 
-import edu.gva.es.domain.RetoDTO // Import corregido
-import edu.gva.es.domain.Retos
+import edu.gva.es.domain.RetosDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object RetosDAO {
-    fun obtenerTodos(): List<RetoDTO> = transaction {
+    fun obtenerTodos(): List<RetosDTO> = transaction {
         Retos.selectAll().map {
-            RetoDTO(
-                id = it[Retos.id],
-                nombre = it[Retos.nombre],
+            RetosDTO(
+                id = it[Retos.id_reto],
+                titulo = it[Retos.titulo],
                 descripcion = it[Retos.descripcion],
                 puntos = it[Retos.puntos]
             )
         }
     }
 
-    fun obtenerPorId(idReto: Int): RetoDTO? = transaction {
-        Retos.selectAll().where { Retos.id eq idReto }.map {
-            RetoDTO(
-                id = it[Retos.id],
-                nombre = it[Retos.nombre],
+    fun obtenerPorId(idReto: Int): RetosDTO? = transaction {
+        Retos.selectAll().where { Retos.id_reto eq idReto }.map {
+            RetosDTO(
+                id = it[Retos.id_reto],
+                titulo = it[Retos.titulo],
                 descripcion = it[Retos.descripcion],
                 puntos = it[Retos.puntos]
             )
         }.singleOrNull()
     }
 
-    fun insertar(dto: RetoDTO): Int = transaction {
+    fun insertar(dto: RetosDTO): Int = transaction {
         Retos.insert {
-            it[nombre] = dto.nombre
+            it[titulo] = dto.titulo
             it[descripcion] = dto.descripcion
             it[puntos] = dto.puntos
-        } get Retos.id
+        } get Retos.id_reto
     }
 
-    fun actualizar(idReto: Int, dto: RetoDTO): Boolean = transaction {
-        Retos.update({ Retos.id eq idReto }) {
-            it[nombre] = dto.nombre
+    fun actualizar(idReto: Int, dto: RetosDTO): Boolean = transaction {
+        Retos.update({ Retos.id_reto eq idReto }) {
+            it[titulo] = dto.titulo
             it[descripcion] = dto.descripcion
             it[puntos] = dto.puntos
         } > 0
     }
 
     fun eliminar(idReto: Int): Boolean = transaction {
-        Retos.deleteWhere { id eq idReto } > 0
+        Retos.deleteWhere { id_reto eq idReto } > 0
     }
 }

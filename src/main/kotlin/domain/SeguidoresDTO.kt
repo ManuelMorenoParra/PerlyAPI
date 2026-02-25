@@ -4,7 +4,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.ReferenceOption
 
-object Seguidores : Table("seguidores") {
+object SeguidoresDTO : Table("seguidores") {
 
     val id = integer("id_seguimiento").autoIncrement()
     val idUsuario = integer("id_usuario")

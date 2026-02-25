@@ -1,17 +1,13 @@
 package edu.gva.es.domain
 
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.ReferenceOption
+import kotlinx.serialization.Serializable
+// Borra los imports de Table y datetime si no los usas aquí
 
-object Publicaciones : Table("publicaciones") {
-
-    val id = integer("id_publicacion").autoIncrement()
-    val idUsuario = integer("id_usuario")
-        .references(Usuarios.id, onDelete = ReferenceOption.CASCADE)
-    val texto = text("texto")
-    val fecha = datetime("fecha_publicacion")
-    val imagen = blob("imagen").nullable()
-
-    override val primaryKey = PrimaryKey(id)
-}
+@Serializable
+data class PublicacionesDTO(
+    val id: Int? = null,
+    val idUsuario: Int,
+    val texto: String,
+    val fecha: String, // O LocalDateTime si prefieres
+    val imagen: ByteArray? = null // Los blobs se manejan como ByteArray en Kotlin
+)

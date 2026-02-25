@@ -1,21 +1,21 @@
 package edu.gva.es.services
 
-import edu.gva.es.data.ProgresoDAO
-import edu.gva.es.domain.ProgresoDTO
+import edu.gva.es.data.ProgresosDAO
+import edu.gva.es.domain.ProgresosDTO
 
 class ProgresosService {
-    fun obtenerProgresoUsuario(idUsuario: Int): List<ProgresoDTO> =
-        ProgresoDAO.obtenerPorUsuario(idUsuario)
+    fun obtenerProgresoUsuario(idUsuario: Int): List<ProgresosDTO> =
+        ProgresosDAO.getByUsuario(idUsuario)
 
-    fun registrarProgreso(dto: ProgresoDTO): Int =
-        ProgresoDAO.insertar(dto)
+    fun registrarProgreso(dto: ProgresosDTO): Int =
+        ProgresosDAO.insert(dto)
 
     fun obtenerPuntosTotales(idUsuario: Int): Int =
-        ProgresoDAO.sumarPuntosUsuario(idUsuario)
+        ProgresosDAO.totalPuntosUsuario(idUsuario)
 
-    fun editarProgreso(id: Int, dto: ProgresoDTO): Boolean =
-        ProgresoDAO.actualizar(id, dto)
+    fun editarProgreso(id: Int, dto: ProgresosDTO): Boolean =
+        ProgresosDAO.actualizar(id, dto)
 
     fun eliminarProgreso(id: Int): Boolean =
-        ProgresoDAO.eliminar(id)
+        ProgresosDAO.delete(id)
 }

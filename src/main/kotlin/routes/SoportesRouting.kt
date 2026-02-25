@@ -1,6 +1,6 @@
 package edu.gva.es.routes
 
-import edu.gva.es.domain.SoporteDTO
+import edu.gva.es.domain.SoportesDTO
 import edu.gva.es.services.SoportesService // Nombre corregido con S
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -11,7 +11,7 @@ import io.ktor.server.routing.*
 fun Route.soporteRouting() {
     route("/soportes") {
         post {
-            val dto = call.receive<SoporteDTO>()
+            val dto = call.receive<SoportesDTO>()
             val id = SoportesService.crear(dto)
             call.respond(HttpStatusCode.Created, mapOf("id" to id))
         }

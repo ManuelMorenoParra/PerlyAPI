@@ -1,13 +1,6 @@
 package edu.gva.es.domain
+import kotlinx.serialization.Serializable
 
-import org.jetbrains.exposed.sql.Table
+@Serializable
+data class RetosDTO(val id: Int? = null, val titulo: String, val descripcion: String, val puntos: Int)
 
-object Retos : Table("retos") {
-
-    val id = integer("id_reto").autoIncrement()
-    val titulo = varchar("titulo", 100).uniqueIndex()
-    val descripcion = text("descripcion")
-    val puntos = integer("puntos_recompensa")
-
-    override val primaryKey = PrimaryKey(id)
-}

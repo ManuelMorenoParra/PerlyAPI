@@ -1,6 +1,6 @@
 package edu.gva.es.routes
 
-import edu.gva.es.domain.PublicacionDTO
+import edu.gva.es.domain.PublicacionesDTO
 import edu.gva.es.services.PublicacionesService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -20,7 +20,7 @@ fun Route.publicacionesRouting() {
         }
 
         post {
-            val pub = call.receive<PublicacionDTO>()
+            val pub = call.receive<PublicacionesDTO>()
             val id = service.create(pub)
             call.respond(HttpStatusCode.Created, mapOf("id" to id))
         }
@@ -32,7 +32,7 @@ fun Route.publicacionesRouting() {
 
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val dto = call.receive<PublicacionDTO>()
+            val dto = call.receive<PublicacionesDTO>()
             if (service.editarPublicacion(id, dto)) call.respond(HttpStatusCode.OK) else call.respond(HttpStatusCode.NotFound)
         }
     }

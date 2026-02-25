@@ -1,6 +1,6 @@
 package edu.gva.es.routes
 
-import edu.gva.es.domain.RetoDTO
+import edu.gva.es.domain.RetosDTO
 import edu.gva.es.services.RetosService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -19,14 +19,14 @@ fun Route.retosRouting() {
         }
 
         post {
-            val request = call.receive<RetoDTO>()
+            val request = call.receive<RetosDTO>()
             val nuevo = RetosService.createReto(request)
             call.respond(HttpStatusCode.Created, nuevo)
         }
 
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val request = call.receive<RetoDTO>()
+            val request = call.receive<RetosDTO>()
             if (RetosService.updateReto(id, request)) call.respond(HttpStatusCode.OK) else call.respond(HttpStatusCode.NotFound)
         }
 

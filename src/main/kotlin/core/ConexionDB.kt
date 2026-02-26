@@ -6,13 +6,20 @@ import edu.gva.es.data.*
 
 object ConexionDB {
 
-    private const val HOST = "192.168.0.21"
+    private const val HOST = "pearly.cch8km4gcrmo.us-east-1.rds.amazonaws.com"
     private const val PORT = 3306
     private const val DATABASE = "pearlyDB"
-    private const val USER = "dam"
-    private const val PASSWORD = "Dam2526"
+    private const val USER = "Administrator"
+    private const val PASSWORD = "PI2026dam"
 
-    private val URL = "jdbc:mysql://$HOST:$PORT/$DATABASE?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Madrid"
+    private val URL =
+        "jdbc:mysql://$HOST:$PORT/$DATABASE" +
+                "?useSSL=false" +
+                "&allowPublicKeyRetrieval=true" +
+                "&serverTimezone=Europe/Madrid"
+
+
+    lateinit var db: Database
 
     fun conectar() {
         try {

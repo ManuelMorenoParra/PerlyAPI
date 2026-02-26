@@ -8,19 +8,31 @@ import java.time.LocalDateTime
 
 object PublicacionesDAO {
 
-    private fun rowToDto(it: ResultRow): PublicacionesDTO = transaction {
+    // Quitamos el transaction{} de aquí porque ya se abre en getAll()
+    private fun rowToDto(it: ResultRow): PublicacionesDTO {
         val pubId = it[Publicaciones.id]
 
-        // Contar likes
-        val totalLikes = Likes.selectAll().where { Likes.idPublicacion eq pubId }.count().toInt()
+        // 1. Contar likes (Seguro)
+        val totalLikes = Likes.select { Likes.idPublicacion eq pubId }.count().toInt()
 
-        // Obtener nombres de usuarios que dieron like
-        val usuariosLike = (Likes innerJoin Usuarios)
-            .select(Usuarios.nombre)
-            .where { Likes.idPublicacion eq pubId }
-            .map { row -> row[Usuarios.nombre] }
+        // 2. Sacar los nombres SIN innerJoin (A prueba de fallos)
+        // Paso A: Sacamos la lista de IDs de los usuarios que dieron like
+        val idsUsuarios = Likes
+            .slice(Likes.idUsuario)
+            .select { Likes.idPublicacion eq pubId }
+            .map { row -> row[Likes.idUsuario] }
 
-        PublicacionesDTO(
+        // Paso B: Buscamos los nombres de esos IDs (Solo si hay likes)
+        val usuariosLike = if (idsUsuarios.isNotEmpty()) {
+            Usuarios
+                .slice(Usuarios.nombre)
+                .select { Usuarios.id inList idsUsuarios }
+                .map { row -> row[Usuarios.nombre] }
+        } else {
+            emptyList()
+        }
+
+        return PublicacionesDTO(
             id = pubId,
             idUsuario = it[Publicaciones.idUsuario],
             texto = it[Publicaciones.texto],

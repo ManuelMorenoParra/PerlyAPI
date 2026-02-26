@@ -13,31 +13,49 @@ fun Route.soportesRouting() {
 
     route("/soportes") {
 
-        // GET /soportes/usuario/1
+        // GET /soportes/usuario/1 -> Listar tickets del usuario
         get("/usuario/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
-            call.respond(service.obtenerMisTickets(id))
+            val id = call.parameters["id"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, "ID de usuario no válido")
+
+            val tickets = service.obtenerMisTickets(id)
+            call.respond(tickets)
         }
 
-        // POST /soportes
+        // POST /soportes -> Crear un nuevo ticket
         post {
             try {
-                val ticket = call.receive<SoportesDTO>()
-                val idGenerado = service.crearTicket(ticket)
+
+                val ticketReq = call.receive<SoportesDTO>()
+                val ticketFinal = ticketReq.copy(estado = "open")
+
+                val idGenerado = service.crearTicket(ticketFinal)
                 call.respond(HttpStatusCode.Created, mapOf("id" to idGenerado))
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Error en los datos del ticket")
+
+                application.log.error("Error creando ticket: ${e.message}")
+                call.respond(HttpStatusCode.BadRequest, "Error en el formato del ticket")
             }
         }
 
-        // PUT /soportes/responder/5 (Para uso administrativo)
+        // PUT /soportes/responder/{id} -> Responder y cerrar ticket (Admin)
         put("/responder/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull() ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val cuerpo = call.receive<Map<String, String>>()
-            val respuesta = cuerpo["respuesta"] ?: ""
+            val id = call.parameters["id"]?.toIntOrNull()
+                ?: return@put call.respond(HttpStatusCode.BadRequest, "ID de ticket no válido")
 
-            service.responderTicket(id, respuesta)
-            call.respond(HttpStatusCode.OK, "Ticket respondido")
+            try {
+                val cuerpo = call.receive<Map<String, String>>()
+                val respuesta = cuerpo["respuesta"]
+
+                if (respuesta.isNullOrBlank()) {
+                    return@put call.respond(HttpStatusCode.BadRequest, "La respuesta no puede estar vacía")
+                }
+
+                service.responderTicket(id, respuesta)
+                call.respond(HttpStatusCode.OK, mapOf("status" to "Ticket respondido y marcado como resolved"))
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "Error al procesar la respuesta")
+            }
         }
     }
 }

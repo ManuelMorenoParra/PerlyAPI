@@ -10,8 +10,8 @@ object Soportes : Table("soportes") {
     val asunto = varchar("asunto", 255)
     val descripcion = text("descripcion")
     val respuesta = text("respuesta").nullable()
-    val estado = varchar("estado", 20).default("open") // open, in-progress, resolved, closed
-    val fechaApertura = datetime("fecha_apertura")
+    val estado = varchar("estado", 20).default("open")
+    val fechaApertura = datetime("fecha_apertura").defaultExpression(org.jetbrains.exposed.sql.javatime.CurrentDateTime)
     val fechaRespuesta = datetime("fecha_respuesta").nullable()
 
     override val primaryKey = PrimaryKey(id)

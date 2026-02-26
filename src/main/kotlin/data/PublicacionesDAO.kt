@@ -8,20 +8,19 @@ import java.time.LocalDateTime
 
 object PublicacionesDAO {
 
-    private fun rowToDto(it: ResultRow): PublicacionesDTO {
+    private fun rowToDto(it: ResultRow): PublicacionesDTO = transaction {
         val pubId = it[Publicaciones.id]
 
-        // 1. Contamos cuántos likes tiene esta publicación
+        // Contar likes
         val totalLikes = Likes.selectAll().where { Likes.idPublicacion eq pubId }.count().toInt()
 
-        // 2. Sacamos una lista con los nombres de los usuarios que han dado like
+        // Obtener nombres de usuarios que dieron like
         val usuariosLike = (Likes innerJoin Usuarios)
             .select(Usuarios.nombre)
             .where { Likes.idPublicacion eq pubId }
             .map { row -> row[Usuarios.nombre] }
 
-        // 3. Devolvemos el objeto completo a Angular
-        return PublicacionesDTO(
+        PublicacionesDTO(
             id = pubId,
             idUsuario = it[Publicaciones.idUsuario],
             texto = it[Publicaciones.texto],

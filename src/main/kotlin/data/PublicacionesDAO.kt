@@ -8,15 +8,14 @@ import java.time.LocalDateTime
 
 object PublicacionesDAO {
 
-    // Quitamos el transaction{} de aquí porque ya se abre en getAll()
     private fun rowToDto(it: ResultRow): PublicacionesDTO {
         val pubId = it[Publicaciones.id]
-        val autorId = it[Publicaciones.idUsuario] // Cogemos el ID del autor
+        val autorId = it[Publicaciones.idUsuario] 
 
-        // 1. Buscamos el nombre y avatar del autor de este post
-        val autorRow = Usuarios.select { Usuarios.id eq autorId }.singleOrNull()
-        val nombreDelAutor = autorRow?.get(Usuarios.nombre) ?: "Usuario $autorId"
-        val avatarDelAutor = autorRow?.get(Usuarios.avatar)
+        // 1. 🌟 MAGIA: Al haber hecho el JOIN, el nombre y el avatar ya vienen 
+        // integrados en la misma fila ("it"). Adiós al bloqueo de la base de datos.
+        val nombreDelAutor = it[Usuarios.nombre]
+        val avatarDelAutor = it[Usuarios.avatar]
 
         // 2. Contar likes (Seguro)
         val totalLikes = Likes.select { Likes.idPublicacion eq pubId }.count().toInt()
@@ -36,17 +35,25 @@ object PublicacionesDAO {
             idRetoVinculado = it[Publicaciones.idRetoVinculado],
             likesCount = totalLikes,
             likedBy = usuariosLike,
-            nombreUsuario = nombreDelAutor, // 👈 Lo enviamos a Angular
-            avatarUsuario = avatarDelAutor  // 👈 Lo enviamos a Angular
+            nombreUsuario = nombreDelAutor, // 👈 Ahora sí que sí, enviamos el real
+            avatarUsuario = avatarDelAutor  // 👈 Y enviamos el avatar real en Base64
         )
     }
 
     fun getAll(): List<PublicacionesDTO> = transaction {
-        Publicaciones.selectAll().orderBy(Publicaciones.fecha to SortOrder.DESC).map { rowToDto(it) }
+        // 🌟 Usamos "join" directamente para traer toda la info cruzada en 1 sola consulta
+        Publicaciones.join(Usuarios, JoinType.INNER, additionalConstraint = { Publicaciones.idUsuario eq Usuarios.id })
+            .selectAll()
+            .orderBy(Publicaciones.fecha to SortOrder.DESC)
+            .map { rowToDto(it) }
     }
 
     fun getByUsuario(idUser: Int): List<PublicacionesDTO> = transaction {
-        Publicaciones.selectAll().where { Publicaciones.idUsuario eq idUser }.map { rowToDto(it) }
+        // 🌟 Usamos el mismo "join" aquí para el perfil
+        Publicaciones.join(Usuarios, JoinType.INNER, additionalConstraint = { Publicaciones.idUsuario eq Usuarios.id })
+            .selectAll()
+            .where { Publicaciones.idUsuario eq idUser }
+            .map { rowToDto(it) }
     }
 
     fun insert(dto: PublicacionesDTO): Int = transaction {

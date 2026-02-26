@@ -4,11 +4,13 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 
 @Serializable
-data class PublicacionesDTO(
+data class PublicacionDTO(
     val id: Int? = null,
     val idUsuario: Int,
     val texto: String,
     val fecha: String? = null,
-    val imagen: String? = null, // Ahora es String (Base64)
-    val idRetoVinculado: Int? = null // Nuevo atributo
+    val imagen: String? = null,
+    val idRetoVinculado: Int? = null,
+    val likesCount: Int = 0,
+    val likedBy: List<String> = emptyList() // Lista de nombres de usuario que le dieron like
 )

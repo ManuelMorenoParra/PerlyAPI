@@ -19,6 +19,7 @@ fun main() {
     ConexionDB.conectar()
 
     transaction {
+
         SchemaUtils.create(
             Usuarios,
             Publicaciones,

@@ -6,5 +6,7 @@ import kotlinx.serialization.Serializable
 data class BloqueosDTO(
     val id: Int? = null,
     val idBloqueador: Int,
-    val idBloqueado: Int
+    val idBloqueado: Int,
+    val tipo: String = "block", // 'block' o 'mute'
+    val fecha: String? = null
 )

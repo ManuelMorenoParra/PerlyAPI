@@ -2,13 +2,17 @@ package edu.gva.es.data
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
-import edu.gva.es.domain.*
+import org.jetbrains.exposed.sql.ReferenceOption
 
 object Seguidores : Table("seguidores") {
-    val id = integer("id_seguidor").autoIncrement()
-    val idUsuario = integer("id_usuario")
-    val idSeguido = integer("id_seguido")
-    val fecha = datetime("fecha")
+    val idSeguimiento = integer("id_seguimiento").autoIncrement()
+    val idSeguidor = integer("id_seguidor").references(Usuarios.id, onDelete = ReferenceOption.CASCADE)
+    val idSeguido = integer("id_seguido").references(Usuarios.id, onDelete = ReferenceOption.CASCADE)
+    val fechaSeguimiento = datetime("fecha_seguimiento")
 
-    override val primaryKey = PrimaryKey(id)
+    override val primaryKey = PrimaryKey(idSeguimiento)
+
+    init {
+        uniqueIndex("idx_seguimiento_unico", idSeguidor, idSeguido)
+    }
 }

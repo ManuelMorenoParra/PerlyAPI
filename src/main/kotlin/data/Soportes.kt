@@ -2,14 +2,15 @@ package edu.gva.es.data
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
-import edu.gva.es.domain.*
+import org.jetbrains.exposed.sql.ReferenceOption
 
-object Soportes : Table("soporte") {
-    val id = integer("id_ticket").autoIncrement()
-    val idUsuario = integer("id_usuario")
-    val asunto = varchar("asunto", 100)
+object Soportes : Table("soportes") {
+    val id = integer("id").autoIncrement()
+    val idUsuario = integer("id_usuario").references(Usuarios.id, onDelete = ReferenceOption.CASCADE)
+    val asunto = varchar("asunto", 255)
     val descripcion = text("descripcion")
     val respuesta = text("respuesta").nullable()
+    val estado = varchar("estado", 20).default("open") // open, in-progress, resolved, closed
     val fechaApertura = datetime("fecha_apertura")
     val fechaRespuesta = datetime("fecha_respuesta").nullable()
 

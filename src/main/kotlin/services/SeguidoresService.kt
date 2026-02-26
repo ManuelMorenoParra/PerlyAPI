@@ -1,16 +1,16 @@
 package edu.gva.es.services
 
 import edu.gva.es.data.SeguidoresDAO
-import edu.gva.es.domain.SeguidoresDTO
 
 object SeguidoresService {
-    fun seguir(dto: SeguidoresDTO) = SeguidoresDAO.seguir(dto)
+    fun seguirUsuario(seguidor: Int, seguido: Int) = SeguidoresDAO.seguir(seguidor, seguido)
 
-    fun dejar(usuario: Int, seguido: Int): Int = SeguidoresDAO.dejarDeSeguir(usuario, seguido)
+    fun dejarDeSeguir(seguidor: Int, seguido: Int) = SeguidoresDAO.dejarDeSeguir(seguidor, seguido)
 
-    fun listar(id: Int): List<Int> = SeguidoresDAO.obtenerSeguidores(id)
+    fun obtenerEstadisticas(idUsuario: Int) = mapOf(
+        "followers" to SeguidoresDAO.contarSeguidores(idUsuario),
+        "following" to SeguidoresDAO.contarSeguidos(idUsuario)
+    )
 
-    fun editarSeguimiento(id: Int, dto: SeguidoresDTO): Boolean {
-        return SeguidoresDAO.actualizar(id, dto)
-    }
+    fun verificarRelacion(seguidor: Int, seguido: Int) = SeguidoresDAO.esSeguidor(seguidor, seguido)
 }

@@ -9,7 +9,9 @@ data class UsuariosDTO(
     val password: String? = null,
     val bio: String? = null,
     val avatar: String? = null,
-    val puntosTotales: Int = 0,
+    val achievements: Int = 0, // Sincronizado con Angular
     val puntosEnergia: Int = 0,
-    val rachaActual: Int = 0
+    val rachaActual: Int = 0,
+    val isPrivate: Boolean = false, // Nuevo
+    val onlyFollowersMessages: Boolean = false // Nuevo
 )

@@ -9,40 +9,39 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.bloqueosRouting() {
-    val service = BloqueosService()
+    val service = BloqueosService
 
     route("/bloqueos") {
-        get {
-            val bloqueos = service.obtenerTodos()
-            if (bloqueos.isEmpty()) {
-                call.respond(HttpStatusCode.NoContent)
-            } else {
-                call.respond(bloqueos)
-            }
+
+        get("/usuario/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, "ID de usuario inválido")
+            call.respond(service.listarBloqueadosPorUsuario(id))
         }
 
         post {
             try {
                 val dto = call.receive<BloqueosDTO>()
-                if (dto.idBloqueador == dto.idBloqueado) {
-                    return@post call.respond(HttpStatusCode.BadRequest, "No puedes bloquearte a ti mismo")
-                }
-                val id = service.bloquearUsuario(dto)
-                call.respond(HttpStatusCode.Created, mapOf("id" to id))
+                val idGenerado = service.bloquearUsuario(dto)
+                call.respond(HttpStatusCode.Created, mapOf("id" to idGenerado))
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Error: ${e.message}")
+                call.respond(HttpStatusCode.BadRequest, "Error en el formato de datos")
             }
         }
 
-        delete("/{bloqueador}/{bloqueado}") {
-            val bloqueador = call.parameters["bloqueador"]?.toIntOrNull()
-            val bloqueado = call.parameters["bloqueado"]?.toIntOrNull()
-            if (bloqueador == null || bloqueado == null) return@delete call.respond(HttpStatusCode.BadRequest, "IDs inválidos")
+        delete("/eliminar") {
+            val bloqueador = call.request.queryParameters["bloqueador"]?.toIntOrNull()
+            val bloqueado = call.request.queryParameters["bloqueado"]?.toIntOrNull()
+            val tipo = call.request.queryParameters["tipo"] ?: "block"
 
-            if (service.desbloquearUsuario(bloqueador, bloqueado)) {
-                call.respond(HttpStatusCode.OK, "Desbloqueado")
+            if (bloqueador == null || bloqueado == null) {
+                return@delete call.respond(HttpStatusCode.BadRequest, "Faltan parámetros")
+            }
+
+            if (service.eliminarBloqueo(bloqueador, bloqueado, tipo)) {
+                call.respond(HttpStatusCode.OK, "Restricción eliminada")
             } else {
-                call.respond(HttpStatusCode.NotFound, "No encontrado")
+                call.respond(HttpStatusCode.NotFound, "No se encontró el bloqueo")
             }
         }
     }

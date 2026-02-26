@@ -4,15 +4,11 @@ import edu.gva.es.data.SoportesDAO
 import edu.gva.es.domain.SoportesDTO
 
 object SoportesService {
-    fun crear(dto: SoportesDTO): Int = SoportesDAO.crear(dto)
+    fun crearTicket(ticket: SoportesDTO): Int = SoportesDAO.insertar(ticket)
 
-    fun responder(id: Int, r: String) = SoportesDAO.responder(id, r)
+    fun obtenerMisTickets(idUsuario: Int): List<SoportesDTO> = SoportesDAO.listarPorUsuario(idUsuario)
 
-    fun listarPorUsuario(idUsuario: Int): List<SoportesDTO> = SoportesDAO.listarPorUsuario(idUsuario)
-
-    fun editarSoporte(id: Int, dto: SoportesDTO): Boolean {
-        return SoportesDAO.actualizar(id, dto)
+    fun responderTicket(idTicket: Int, respuesta: String) {
+        SoportesDAO.actualizarEstado(idTicket, "resolved", respuesta)
     }
-
-    fun eliminar(id: Int): Boolean = SoportesDAO.eliminar(id)
 }

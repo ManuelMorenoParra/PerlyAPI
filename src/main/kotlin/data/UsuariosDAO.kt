@@ -14,9 +14,11 @@ object UsuariosDAO {
         password = this[Usuarios.password],
         bio = this[Usuarios.bio],
         avatar = this[Usuarios.avatar],
-        puntosTotales = this[Usuarios.puntosTotales],
+        achievements = this[Usuarios.achievements], // Antes puntosTotales
         puntosEnergia = this[Usuarios.puntosEnergia],
-        rachaActual = this[Usuarios.rachaActual]
+        rachaActual = this[Usuarios.rachaActual],
+        isPrivate = this[Usuarios.isPrivate], // Nuevo campo de privacidad
+        onlyFollowersMessages = this[Usuarios.onlyFollowersMessages] // Nuevo campo de privacidad
     )
 
     fun seleccionarTodos(): List<UsuariosDTO> = transaction {
@@ -38,9 +40,11 @@ object UsuariosDAO {
             it[password] = u.password ?: ""
             it[bio] = u.bio
             it[avatar] = u.avatar
-            it[puntosTotales] = u.puntosTotales
+            it[achievements] = u.achievements
             it[puntosEnergia] = u.puntosEnergia
             it[rachaActual] = u.rachaActual
+            it[isPrivate] = u.isPrivate
+            it[onlyFollowersMessages] = u.onlyFollowersMessages
         } get Usuarios.id
     }
 
@@ -51,13 +55,15 @@ object UsuariosDAO {
             if (u.password != null) it[password] = u.password
             it[bio] = u.bio
             it[avatar] = u.avatar
-            it[puntosTotales] = u.puntosTotales
+            it[achievements] = u.achievements
             it[puntosEnergia] = u.puntosEnergia
             it[rachaActual] = u.rachaActual
+            it[isPrivate] = u.isPrivate
+            it[onlyFollowersMessages] = u.onlyFollowersMessages
         }
     }
 
     fun eliminar(idUsuario: Int): Int = transaction {
-        Usuarios.deleteWhere { Usuarios.id eq idUsuario }
+        Usuarios.deleteWhere { id eq idUsuario }
     }
 }

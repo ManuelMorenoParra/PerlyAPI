@@ -4,28 +4,35 @@ import edu.gva.es.domain.SeguidoresDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 
 object SeguidoresDAO {
-    fun seguir(dto: SeguidoresDTO) = transaction {
-        Seguidores.insert {
-            it[idUsuario] = dto.idUsuario
-            it[idSeguido] = dto.idSeguido
-        } get Seguidores.id
+
+    fun seguir(idSeguidor: Int, idSeguido: Int) = transaction {
+        Seguidores.insertIgnore {
+            it[this.idSeguidor] = idSeguidor
+            it[this.idSeguido] = idSeguido
+            it[fechaSeguimiento] = LocalDateTime.now()
+        }
     }
 
-    fun dejarDeSeguir(u: Int, s: Int): Int = transaction {
-        Seguidores.deleteWhere { (idUsuario eq u) and (idSeguido eq s) }
+    fun dejarDeSeguir(idSeguidorParam: Int, idSeguidoParam: Int) = transaction {
+        Seguidores.deleteWhere {
+            (idSeguidor eq idSeguidorParam) and (idSeguido eq idSeguidoParam)
+        }
     }
 
-    fun obtenerSeguidores(idUser: Int): List<Int> = transaction {
-        Seguidores.selectAll().where { Seguidores.idSeguido eq idUser }
-            .map { it[Seguidores.idUsuario] }
+    fun contarSeguidores(idUsuario: Int): Long = transaction {
+        Seguidores.selectAll().where { Seguidores.idSeguido eq idUsuario }.count()
     }
 
-    fun actualizar(idReg: Int, dto: SeguidoresDTO): Boolean = transaction {
-        Seguidores.update({ Seguidores.id eq idReg }) {
-            it[idUsuario] = dto.idUsuario
-            it[idSeguido] = dto.idSeguido
-        } > 0
+    fun contarSeguidos(idUsuario: Int): Long = transaction {
+        Seguidores.selectAll().where { Seguidores.idSeguidor eq idUsuario }.count()
+    }
+
+    fun esSeguidor(idSeguidorParam: Int, idSeguidoParam: Int): Boolean = transaction {
+        !Seguidores.selectAll().where {
+            (Seguidores.idSeguidor eq idSeguidorParam) and (Seguidores.idSeguido eq idSeguidoParam)
+        }.empty()
     }
 }

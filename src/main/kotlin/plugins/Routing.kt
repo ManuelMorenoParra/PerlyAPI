@@ -17,10 +17,10 @@ fun Application.configureRouting() {
         retosRouting()
         publicacionesRouting()
         comentariosRouting()
-        progresoRouting()
+        progresosRouting()
         likesRouting()
         seguidoresRouting()
-        soporteRouting()
+        soportesRouting()
         bloqueosRouting()
     }
 }

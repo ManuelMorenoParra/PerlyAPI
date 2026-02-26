@@ -9,6 +9,7 @@ data class SoportesDTO(
     val asunto: String,
     val descripcion: String,
     val respuesta: String? = null,
+    val estado: String = "open",
     val fechaApertura: String? = null,
     val fechaRespuesta: String? = null,
 )

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 
 @Serializable
-data class PublicacionDTO(
+data class PublicacionesDTO(
     val id: Int? = null,
     val idUsuario: Int,
     val texto: String,

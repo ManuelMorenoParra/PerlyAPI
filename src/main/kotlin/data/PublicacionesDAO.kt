@@ -11,36 +11,33 @@ object PublicacionesDAO {
     // Quitamos el transaction{} de aquí porque ya se abre en getAll()
     private fun rowToDto(it: ResultRow): PublicacionesDTO {
         val pubId = it[Publicaciones.id]
+        val autorId = it[Publicaciones.idUsuario] // Cogemos el ID del autor
 
-        // 1. Contar likes (Seguro)
+        // 1. Buscamos el nombre y avatar del autor de este post
+        val autorRow = Usuarios.select { Usuarios.id eq autorId }.singleOrNull()
+        val nombreDelAutor = autorRow?.get(Usuarios.nombre) ?: "Usuario $autorId"
+        val avatarDelAutor = autorRow?.get(Usuarios.avatar)
+
+        // 2. Contar likes (Seguro)
         val totalLikes = Likes.select { Likes.idPublicacion eq pubId }.count().toInt()
 
-        // 2. Sacar los nombres SIN innerJoin (A prueba de fallos)
-        // Paso A: Sacamos la lista de IDs de los usuarios que dieron like
-        val idsUsuarios = Likes
-            .slice(Likes.idUsuario)
-            .select { Likes.idPublicacion eq pubId }
-            .map { row -> row[Likes.idUsuario] }
-
-        // Paso B: Buscamos los nombres de esos IDs (Solo si hay likes)
+        // 3. Nombres de likes
+        val idsUsuarios = Likes.slice(Likes.idUsuario).select { Likes.idPublicacion eq pubId }.map { row -> row[Likes.idUsuario] }
         val usuariosLike = if (idsUsuarios.isNotEmpty()) {
-            Usuarios
-                .slice(Usuarios.nombre)
-                .select { Usuarios.id inList idsUsuarios }
-                .map { row -> row[Usuarios.nombre] }
-        } else {
-            emptyList()
-        }
+            Usuarios.slice(Usuarios.nombre).select { Usuarios.id inList idsUsuarios }.map { row -> row[Usuarios.nombre] }
+        } else { emptyList() }
 
         return PublicacionesDTO(
             id = pubId,
-            idUsuario = it[Publicaciones.idUsuario],
+            idUsuario = autorId,
             texto = it[Publicaciones.texto],
             fecha = it[Publicaciones.fecha].toString(),
             imagen = it[Publicaciones.imagen],
             idRetoVinculado = it[Publicaciones.idRetoVinculado],
             likesCount = totalLikes,
-            likedBy = usuariosLike
+            likedBy = usuariosLike,
+            nombreUsuario = nombreDelAutor, // 👈 Lo enviamos a Angular
+            avatarUsuario = avatarDelAutor  // 👈 Lo enviamos a Angular
         )
     }
 

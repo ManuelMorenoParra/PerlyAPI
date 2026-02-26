@@ -1,5 +1,4 @@
 package edu.gva.es.domain
-
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -11,5 +10,7 @@ data class PublicacionesDTO(
     val imagen: String? = null,
     val idRetoVinculado: Int? = null,
     val likesCount: Int = 0,
-    val likedBy: List<String> = emptyList()
+    val likedBy: List<String> = emptyList(),
+    val nombreUsuario: String = "",
+    val avatarUsuario: String? = null
 )

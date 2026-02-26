@@ -2,13 +2,13 @@ package edu.gva.es.data
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
-import edu.gva.es.domain.*
+import java.time.LocalDateTime
 
 object Likes : Table("likes") {
     val id = integer("id_like").autoIncrement()
-    val idUsuario = integer("id_usuario") // Foreign Key a la tabla usuarios
-    val idPublicacion = integer("id_publicacion") // Foreign Key a la tabla publicaciones
-    val fecha = datetime("fecha")
-
+    val idUsuario = integer("id_usuario")
+    val idPublicacion = integer("id_publicacion")
+    // Usamos LocalDateTime de Java para la compatibilidad con exposed-java-time
+    val fecha = datetime("fecha").defaultExpression(org.jetbrains.exposed.sql.javatime.CurrentDateTime)
     override val primaryKey = PrimaryKey(id)
 }

@@ -9,13 +9,13 @@ CREATE TABLE usuarios (
                           password VARCHAR(255) NOT NULL,
                           bio TEXT,
                           avatar LONGTEXT, -- Para Base64
-                          achievements INT DEFAULT 0, -- Sincronizado con Angular
+                          achievements INT DEFAULT 0,
                           puntos_energia INT DEFAULT 0,
                           racha_actual INT DEFAULT 0,
                           followers_count INT DEFAULT 0,
                           following_count INT DEFAULT 0,
-                          is_private BOOLEAN DEFAULT FALSE, -- Para ajustes de privacidad
-                          only_followers_messages BOOLEAN DEFAULT FALSE -- Para ajustes de mensajes
+                          is_private BOOLEAN DEFAULT FALSE,
+                          only_followers_messages BOOLEAN DEFAULT FALSE
 );
 
 -- 2. Tabla Retos

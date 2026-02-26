@@ -4,12 +4,15 @@ import edu.gva.es.domain.LikesDTO
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 
 object LikesDAO {
     fun insertar(dto: LikesDTO): Boolean = transaction {
         Likes.insert {
             it[idUsuario] = dto.idUsuario
             it[idPublicacion] = dto.idPublicacion
+            // La fecha se pone sola por el defaultExpression, o puedes forzarla:
+            it[fecha] = LocalDateTime.now()
         }.insertedCount > 0
     }
 
@@ -25,6 +28,8 @@ object LikesDAO {
         Likes.update({ Likes.id eq idLike }) {
             it[idUsuario] = dto.idUsuario
             it[idPublicacion] = dto.idPublicacion
+            // Si quieres actualizar la fecha al editar:
+            it[fecha] = LocalDateTime.now()
         } > 0
     }
 }

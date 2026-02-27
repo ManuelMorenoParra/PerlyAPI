@@ -29,19 +29,17 @@ object PublicacionesDAO {
         val listaComentarios = ComentariosDAO.obtenerPorPublicacion(pubId)
 
         return PublicacionesDTO(
-            id = pubId,
-            idUsuario = autorId,
-            texto = it[Publicaciones.texto],
-            fecha = it[Publicaciones.fecha].toString(),
-            imagen = it[Publicaciones.imagen],
-            idRetoVinculado = it[Publicaciones.idRetoVinculado],
-            likesCount = totalLikes,
-            likedBy = usuariosLike,
-            nombreUsuario = nombreDelAutor, // 👈 Ahora sí que sí, enviamos el real
-            avatarUsuario = avatarDelAutor,
-            comments = listaComentarios
-        )
-    }
+                id = pubId,
+                idUsuario = it[Publicaciones.idUsuario],
+                texto = it[Publicaciones.texto],
+                fecha = it[Publicaciones.fecha].toString(),
+                imagen = it[Publicaciones.imagen],
+                nombreUsuario = it[Usuarios.nombre],
+                avatarUsuario = it[Usuarios.avatar],
+                // ASIGNAMOS LA LISTA AL DTO
+                comments = listaComentarios 
+            )
+        }
 
     fun getAll(): List<PublicacionesDTO> = transaction {
         // 🌟 Usamos "join" directamente para traer toda la info cruzada en 1 sola consulta

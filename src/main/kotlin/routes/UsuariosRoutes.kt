@@ -23,7 +23,7 @@ fun Route.usuarioRouting() {
 
         get("/buscar") {
             val query = call.request.queryParameters["nombre"] ?: ""
-            // Es mejor llamar al service si lo tienes, pero llamar al DAO directamente funciona
+
             val resultados = UsuariosDAO.buscarPorNombre(query)
             call.respond(resultados)
         }

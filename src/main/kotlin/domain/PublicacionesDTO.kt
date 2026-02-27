@@ -12,6 +12,6 @@ data class PublicacionesDTO(
     val likesCount: Int = 0,
     val likedBy: List<String> = emptyList(),
     val nombreUsuario: String = "",
-    val avatarUsuario: String? = null
+    val avatarUsuario: String? = null,
     val comments: List<ComentariosDTO> = emptyList()
 )

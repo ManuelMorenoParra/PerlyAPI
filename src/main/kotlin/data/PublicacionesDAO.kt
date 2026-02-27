@@ -26,6 +26,8 @@ object PublicacionesDAO {
             Usuarios.slice(Usuarios.nombre).select { Usuarios.id inList idsUsuarios }.map { row -> row[Usuarios.nombre] }
         } else { emptyList() }
 
+        val listaComentarios = ComentariosDAO.obtenerPorPublicacion(pubId)
+
         return PublicacionesDTO(
             id = pubId,
             idUsuario = autorId,
@@ -36,7 +38,8 @@ object PublicacionesDAO {
             likesCount = totalLikes,
             likedBy = usuariosLike,
             nombreUsuario = nombreDelAutor, // 👈 Ahora sí que sí, enviamos el real
-            avatarUsuario = avatarDelAutor  // 👈 Y enviamos el avatar real en Base64
+            avatarUsuario = avatarDelAutor 
+            comments = listaComentarios
         )
     }
 

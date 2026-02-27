@@ -11,6 +11,7 @@ object ComentariosDAO {
             it[idPublicacion] = dto.idPublicacion
             it[idUsuario] = dto.idUsuario
             it[contenido] = dto.contenido
+            it[fecha] = java.time.LocalDateTime.now() 
         } get Comentarios.idComentario
     }
 

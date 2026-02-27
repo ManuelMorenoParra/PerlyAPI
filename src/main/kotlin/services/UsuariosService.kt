@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.or
 
 object UsuariosService {
+    
     fun listarUsuarios(): List<UsuariosDTO> = UsuariosDAO.seleccionarTodos()
 
     fun buscarPorId(id: Int): UsuariosDTO? = UsuariosDAO.seleccionarPorId(id)
@@ -23,7 +24,6 @@ object UsuariosService {
     }
 
     fun eliminarUsuarioCompleto(idUsuarioParam: Int) = transaction {
-
         Publicaciones.deleteWhere { Publicaciones.idUsuario eq idUsuarioParam }
         Soportes.deleteWhere { Soportes.idUsuario eq idUsuarioParam }
         Likes.deleteWhere { Likes.idUsuario eq idUsuarioParam }
@@ -32,7 +32,7 @@ object UsuariosService {
     }
 
     fun login(email: String, pass: String): UsuariosDTO? {
-        val usuario = UsuariosDAO.seleccionarPorEmail(email)
-        return if (usuario != null && usuario.password == pass) usuario else null
+        // Delegamos la verificación al DAO que es donde está la lógica de BCrypt.checkpw
+        return UsuariosDAO.verificarPassword(email, pass)
     }
 }

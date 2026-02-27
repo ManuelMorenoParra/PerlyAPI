@@ -54,16 +54,21 @@ fun Route.usuarioRouting() {
         }
     }
 
-    route("/auth") {
-        post("/login") {
+route("/auth") {
+    post("/login") {
+        try {
             val login = call.receive<LoginRequest>()
             val usuario = service.login(login.email, login.password)
+            
             if (usuario != null) {
-                // Devolvemos el usuario completo para que Angular tenga el ID, nombre y avatar
-                call.respond(HttpStatusCode.OK, usuario)
+                // No devolvemos la contraseña al front por seguridad
+                call.respond(HttpStatusCode.OK, usuario.copy(password = null))
             } else {
                 call.respond(HttpStatusCode.Unauthorized, "Email o contraseña incorrectos")
             }
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError, "Error en el servidor: ${e.message}")
         }
     }
+}
 }

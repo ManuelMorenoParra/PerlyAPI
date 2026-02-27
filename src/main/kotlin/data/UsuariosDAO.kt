@@ -1,6 +1,7 @@
 package edu.gva.es.data
 
 import edu.gva.es.domain.UsuariosDTO
+import org.gradle.internal.impldep.com.jcraft.jsch.jbcrypt.BCrypt
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -14,12 +15,22 @@ object UsuariosDAO {
         password = this[Usuarios.password],
         bio = this[Usuarios.bio],
         avatar = this[Usuarios.avatar],
-        achievements = this[Usuarios.achievements], // Antes puntosTotales
+        achievements = this[Usuarios.achievements],
         puntosEnergia = this[Usuarios.puntosEnergia],
         rachaActual = this[Usuarios.rachaActual],
-        isPrivate = this[Usuarios.isPrivate], // Nuevo campo de privacidad
-        onlyFollowersMessages = this[Usuarios.onlyFollowersMessages] // Nuevo campo de privacidad
+        isPrivate = this[Usuarios.isPrivate],
+        onlyFollowersMessages = this[Usuarios.onlyFollowersMessages]
     )
+
+    fun verificarPassword(email: String, passwordPlana: String): UsuariosDTO? = transaction {
+        val user = seleccionarPorEmail(email)
+        // Usa BCrypt de la librería mindrot
+        if (user != null && BCrypt.checkpw(passwordPlana, user.password)) {
+            user
+        } else {
+            null
+        }
+    }
 
     fun seleccionarTodos(): List<UsuariosDTO> = transaction {
         Usuarios.selectAll().map { it.toDTO() }
@@ -37,7 +48,8 @@ object UsuariosDAO {
         Usuarios.insert {
             it[nombre] = u.nombre
             it[email] = u.email
-            it[password] = u.password ?: ""
+            // Genera el hash con la librería mindrot
+            it[password] = BCrypt.hashpw(u.password ?: "", BCrypt.gensalt())
             it[bio] = u.bio
             it[avatar] = u.avatar
             it[achievements] = u.achievements
@@ -52,7 +64,9 @@ object UsuariosDAO {
         Usuarios.update({ Usuarios.id eq idUsuario }) {
             it[nombre] = u.nombre
             it[email] = u.email
-            if (u.password != null) it[password] = u.password
+            if (u.password != null) {
+                it[password] = BCrypt.hashpw(u.password, BCrypt.gensalt())
+            }
             it[bio] = u.bio
             it[avatar] = u.avatar
             it[achievements] = u.achievements

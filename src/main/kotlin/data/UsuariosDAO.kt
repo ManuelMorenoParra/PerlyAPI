@@ -1,10 +1,10 @@
 package edu.gva.es.data
 
 import edu.gva.es.domain.UsuariosDTO
-import org.gradle.internal.impldep.com.jcraft.jsch.jbcrypt.BCrypt
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.mindrot.jbcrypt.BCrypt
 
 object UsuariosDAO {
 
@@ -24,7 +24,7 @@ object UsuariosDAO {
 
     fun verificarPassword(email: String, passwordPlana: String): UsuariosDTO? = transaction {
         val user = seleccionarPorEmail(email)
-        // Usa BCrypt de la librería mindrot
+        // BCrypt de la librería mindrot
         if (user != null && BCrypt.checkpw(passwordPlana, user.password)) {
             user
         } else {
@@ -48,8 +48,7 @@ object UsuariosDAO {
         Usuarios.insert {
             it[nombre] = u.nombre
             it[email] = u.email
-            // Genera el hash con la librería mindrot
-            it[password] = BCrypt.hashpw(u.password ?: "", BCrypt.gensalt())
+            it[password] = BCrypt.hashpw(u.password ?: "", BCrypt.gensalt()) // Genera el hash con la librería mindrot
             it[bio] = u.bio
             it[avatar] = u.avatar
             it[achievements] = u.achievements

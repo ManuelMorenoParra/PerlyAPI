@@ -38,7 +38,7 @@ object PublicacionesDAO {
             likesCount = totalLikes,
             likedBy = usuariosLike,
             nombreUsuario = nombreDelAutor, // 👈 Ahora sí que sí, enviamos el real
-            avatarUsuario = avatarDelAutor 
+            avatarUsuario = avatarDelAutor,
             comments = listaComentarios
         )
     }

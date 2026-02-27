@@ -44,6 +44,12 @@ object UsuariosDAO {
         Usuarios.selectAll().where { Usuarios.email eq email }.map { it.toDTO() }.singleOrNull()
     }
 
+    fun buscarPorNombre(query: String): List<UsuariosDTO> = transaction {
+        Usuarios.selectAll()
+            .where { Usuarios.nombre.lowerCase() like "%${query.lowercase()}%" }
+            .map { it.toDTO() }
+    }
+
     fun insertar(u: UsuariosDTO): Int = transaction {
         Usuarios.insert {
             it[nombre] = u.nombre

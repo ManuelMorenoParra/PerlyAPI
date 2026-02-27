@@ -1,5 +1,6 @@
 package edu.gva.es.routes
 
+import edu.gva.es.data.UsuariosDAO
 import edu.gva.es.domain.*
 import edu.gva.es.services.UsuariosService
 import io.ktor.http.*
@@ -18,6 +19,13 @@ fun Route.usuarioRouting() {
             val id = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.BadRequest)
             val user = service.buscarPorId(id)
             if (user != null) call.respond(user) else call.respond(HttpStatusCode.NotFound)
+        }
+
+        get("/buscar") {
+            val query = call.request.queryParameters["nombre"] ?: ""
+            // Es mejor llamar al service si lo tienes, pero llamar al DAO directamente funciona
+            val resultados = UsuariosDAO.buscarPorNombre(query)
+            call.respond(resultados)
         }
 
         // Registrar usuario (Sign Up)

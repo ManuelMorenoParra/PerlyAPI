@@ -64,8 +64,8 @@ object PublicacionesDAO {
         Publicaciones.insert {
             it[idUsuario] = dto.idUsuario
             it[texto] = dto.texto
-            it[fecha] = LocalDateTime.now()
-            it[imagen] = dto.imagen
+            it[fecha] = LocalDateTime.now() // Esto está bien
+            it[imagen] = dto.imagen // Si es null en el DTO, será null en la DB
             it[idRetoVinculado] = dto.idRetoVinculado
         } get Publicaciones.id
     }

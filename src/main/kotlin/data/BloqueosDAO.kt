@@ -18,7 +18,7 @@ object BloqueosDAO {
     }
 
     fun obtenerBloqueadosPorUsuario(idUser: Int): List<BloqueosDTO> = transaction {
-        // Unimos la tabla Bloqueos con Usuarios donde Bloqueos.idBloqueado == Usuarios.id
+        // Especificamos la relación ON Bloqueos.idBloqueado = Usuarios.id
         (Bloqueos innerJoin Usuarios)
             .select { Bloqueos.idBloqueador eq idUser }
             .map {
@@ -28,8 +28,8 @@ object BloqueosDAO {
                     idBloqueado = it[Bloqueos.idBloqueado],
                     tipo = it[Bloqueos.tipo],
                     fecha = it[Bloqueos.fecha].toString(),
-                    // Extraemos los datos de la tabla Usuarios
-                    name = it[Usuarios.nombre], // o Usuarios.username, como lo tengas
+                    // Ahora usamos 'nombre' que es como lo tienes en tu tabla Usuarios
+                    name = it[Usuarios.nombre], 
                     avatar = it[Usuarios.avatar]
                 )
             }

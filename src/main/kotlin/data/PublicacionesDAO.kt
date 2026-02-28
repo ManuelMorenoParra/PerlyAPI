@@ -10,50 +10,53 @@ object PublicacionesDAO {
 
     private fun rowToDto(it: ResultRow): PublicacionesDTO {
         val pubId = it[Publicaciones.id]
-        val autorId = it[Publicaciones.idUsuario] 
-
-        // 1. 🌟 MAGIA: Al haber hecho el JOIN, el nombre y el avatar ya vienen 
-        // integrados en la misma fila ("it"). Adiós al bloqueo de la base de datos.
-        val nombreDelAutor = it[Usuarios.nombre]
-        val avatarDelAutor = it[Usuarios.avatar]
-
-        // 2. Contar likes (Seguro)
-        val totalLikes = Likes.select { Likes.idPublicacion eq pubId }.count().toInt()
-
-        // 3. Nombres de likes
-        val idsUsuarios = Likes.slice(Likes.idUsuario).select { Likes.idPublicacion eq pubId }.map { row -> row[Likes.idUsuario] }
-        val usuariosLike = if (idsUsuarios.isNotEmpty()) {
-            Usuarios.slice(Usuarios.nombre).select { Usuarios.id inList idsUsuarios }.map { row -> row[Usuarios.nombre] }
-        } else { emptyList() }
 
         val listaComentarios = ComentariosDAO.obtenerPorPublicacion(pubId)
 
-        return PublicacionesDTO(
-                id = pubId,
-                idUsuario = it[Publicaciones.idUsuario],
-                texto = it[Publicaciones.texto],
-                fecha = it[Publicaciones.fecha].toString(),
-                imagen = it[Publicaciones.imagen],
-                nombreUsuario = it[Usuarios.nombre],
-                avatarUsuario = it[Usuarios.avatar],
-                // ASIGNAMOS LA LISTA AL DTO
-                comments = listaComentarios 
-            )
+        val totalLikes = Likes.select { Likes.idPublicacion eq pubId }.count().toInt()
+
+        val usuariosLike = transaction {
+            val idsUsuarios = Likes.slice(Likes.idUsuario)
+                .select { Likes.idPublicacion eq pubId }
+                .map { row -> row[Likes.idUsuario] }
+
+            if (idsUsuarios.isNotEmpty()) {
+                Usuarios.slice(Usuarios.nombre)
+                    .select { Usuarios.id inList idsUsuarios }
+                    .map { row -> row[Usuarios.nombre] }
+            } else {
+                emptyList()
+            }
         }
 
+        return PublicacionesDTO(
+            id = pubId,
+            idUsuario = it[Publicaciones.idUsuario],
+            texto = it[Publicaciones.texto],
+            fecha = it[Publicaciones.fecha].toString(),
+            imagen = it[Publicaciones.imagen],
+            nombreUsuario = it[Usuarios.nombre],
+            avatarUsuario = it[Usuarios.avatar],
+            // Datos de interacción
+            likesCount = totalLikes,
+            likedBy = usuariosLike,
+            comments = listaComentarios,
+            idRetoVinculado = it.getOrNull(Publicaciones.idRetoVinculado)
+        )
+    }
+
     fun getAll(): List<PublicacionesDTO> = transaction {
-        // 🌟 Usamos "join" directamente para traer toda la info cruzada en 1 sola consulta
-        Publicaciones.join(Usuarios, JoinType.INNER, additionalConstraint = { Publicaciones.idUsuario eq Usuarios.id })
+
+        (Publicaciones innerJoin Usuarios)
             .selectAll()
             .orderBy(Publicaciones.fecha to SortOrder.DESC)
             .map { rowToDto(it) }
     }
 
     fun getByUsuario(idUser: Int): List<PublicacionesDTO> = transaction {
-        // 🌟 Usamos el mismo "join" aquí para el perfil
-        Publicaciones.join(Usuarios, JoinType.INNER, additionalConstraint = { Publicaciones.idUsuario eq Usuarios.id })
-            .selectAll()
-            .where { Publicaciones.idUsuario eq idUser }
+        (Publicaciones innerJoin Usuarios)
+            .select { Publicaciones.idUsuario eq idUser }
+            .orderBy(Publicaciones.fecha to SortOrder.DESC)
             .map { rowToDto(it) }
     }
 

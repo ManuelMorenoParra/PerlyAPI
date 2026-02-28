@@ -58,6 +58,13 @@ object PublicacionesDAO {
         } get Publicaciones.id
     }
 
+    fun getByUsuario(idUser: Int): List<PublicacionesDTO> = transaction {
+    (Publicaciones innerJoin Usuarios)
+        .select { Publicaciones.idUsuario eq idUser }
+        .orderBy(Publicaciones.fecha to SortOrder.DESC)
+        .map { rowToDto(it) }
+    }
+
     fun update(idPub: Int, dto: PublicacionesDTO): Boolean = transaction {
         Publicaciones.update({ Publicaciones.id eq idPub }) {
             it[texto] = dto.texto

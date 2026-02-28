@@ -16,7 +16,14 @@ fun Route.bloqueosRouting() {
         get("/usuario/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
                 ?: return@get call.respond(HttpStatusCode.BadRequest, "ID de usuario inválido")
-            call.respond(service.listarBloqueadosPorUsuario(id))
+            
+            try {
+                val lista = service.listarBloqueadosPorUsuario(id)
+                call.respond(lista)
+            } catch (e: Exception) {
+                e.printStackTrace() // ESTO imprimirá el error real en tu consola de IntelliJ
+                call.respond(HttpStatusCode.InternalServerError, "Error en BD: ${e.message}")
+            }
         }
 
         post {
@@ -30,7 +37,7 @@ fun Route.bloqueosRouting() {
         }
 
         delete("/eliminar") {
-            val bloqueador = call.parameters["bloqueador"]?.toIntOrNull() // Cambiado a parameters para ser más flexible
+            val bloqueador = call.parameters["bloqueador"]?.toIntOrNull()
                 ?: call.request.queryParameters["bloqueador"]?.toIntOrNull()
             val bloqueado = call.parameters["bloqueado"]?.toIntOrNull()
                 ?: call.request.queryParameters["bloqueado"]?.toIntOrNull()
@@ -41,7 +48,7 @@ fun Route.bloqueosRouting() {
             }
 
             if (service.eliminarBloqueo(bloqueador, bloqueado, tipo)) {
-                // Devolvemos un JSON en lugar de texto plano para que Angular no se líe
+
                 call.respond(HttpStatusCode.OK, mapOf("message" to "Restricción eliminada"))
             } else {
                 call.respond(HttpStatusCode.NotFound, "No se encontró el bloqueo")

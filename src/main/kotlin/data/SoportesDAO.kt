@@ -25,7 +25,7 @@ object SoportesDAO {
             it[asunto] = s.asunto
             it[descripcion] = s.descripcion
             it[estado] = s.estado ?: "open" // Aseguramos un valor
-            it[fechaApertura] = LocalDateTime.now() // Esto debería solucionar el error del log
+            it[fechaApertura] = LocalDateTime.now()
         } get Soportes.id
     }
 

@@ -1,14 +1,14 @@
 CREATE DATABASE IF NOT EXISTS pearlyDB;
 USE pearlyDB;
 
--- 1. Tabla Usuarios (Sincronizada con UserData y roles de la memoria)
+-- 1. Tabla Usuarios
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     bio TEXT,
-    avatar LONGTEXT, -- Soporta Base64 largo de Angular
+    avatar LONGTEXT, 
     achievements INT DEFAULT 0,
     puntos_energia INT DEFAULT 0,
     racha_actual INT DEFAULT 0,
@@ -29,19 +29,20 @@ CREATE TABLE retos (
     es_diario BOOLEAN DEFAULT FALSE
 );
 
--- 3. Tabla Publicaciones (Ajustada para coincidir con tu PublicacionesDAO y DTO)
+-- 3. Tabla Publicaciones
+-- Sincronizada con PublicacionesDAO: usa id_usuario e id_reto_vinculado
 CREATE TABLE publicaciones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     texto TEXT NOT NULL,
-    fecha DATETIME NOT NULL, -- Kotlin manejará la precisión del tiempo
-    imagen LONGTEXT, -- Cambiado a LONGTEXT para evitar errores con fotos Base64
+    fecha DATETIME NOT NULL, 
+    imagen LONGTEXT, 
     id_reto_vinculado INT NULL,
     CONSTRAINT fk_pub_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
     CONSTRAINT fk_pub_reto FOREIGN KEY (id_reto_vinculado) REFERENCES retos(id) ON DELETE SET NULL
 );
 
--- 4. Tabla Likes (Maneja la lógica de likedBy)
+-- 4. Tabla Likes
 CREATE TABLE likes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
@@ -52,12 +53,13 @@ CREATE TABLE likes (
     CONSTRAINT fk_like_publicacion FOREIGN KEY (id_publicacion) REFERENCES publicaciones(id) ON DELETE CASCADE
 );
 
--- 5. Tabla Comentarios (Sincronizada con tu ComentariosDAO)
+-- 5. Tabla Comentarios
+-- Sincronizada con tu DAO: Cambiado 'contenido' por 'texto' para que coincida con it[Comentarios.texto]
 CREATE TABLE comentarios (
-    id_comentario INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     id_publicacion INT NOT NULL,
     id_usuario INT NOT NULL,
-    texto TEXT NOT NULL, -- Coincide con la propiedad 'contenido' de tu DTO
+    texto TEXT NOT NULL, 
     fecha DATETIME NOT NULL,
     CONSTRAINT fk_com_publicacion FOREIGN KEY (id_publicacion) REFERENCES publicaciones(id) ON DELETE CASCADE,
     CONSTRAINT fk_com_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
@@ -74,7 +76,7 @@ CREATE TABLE seguidores (
     CONSTRAINT fk_seg_seguido FOREIGN KEY (id_seguido) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- 7. Tabla Bloqueos y Silencios (Sincronizada con BlockService de Angular)
+-- 7. Tabla Bloqueos
 CREATE TABLE bloqueos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_bloqueador INT NOT NULL,
@@ -86,7 +88,7 @@ CREATE TABLE bloqueos (
     CONSTRAINT fk_bloq_bloqueado FOREIGN KEY (id_bloqueado) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- 8. Tabla Soportes (Sincronizada con SupportTicket)
+-- 8. Tabla Soportes
 CREATE TABLE soportes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
@@ -99,7 +101,7 @@ CREATE TABLE soportes (
     CONSTRAINT fk_sop_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- 9. Tabla Progresos (Historial de retos)
+-- 9. Tabla Progresos
 CREATE TABLE progresos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
@@ -110,6 +112,6 @@ CREATE TABLE progresos (
     CONSTRAINT fk_prog_reto FOREIGN KEY (id_reto) REFERENCES retos(id) ON DELETE CASCADE
 );
 
--- 10. Índices adicionales para rendimiento de los JOINs
+-- 10. Índices de rendimiento
 CREATE INDEX idx_pub_fecha ON publicaciones(fecha DESC);
 CREATE INDEX idx_com_pub ON comentarios(id_publicacion);

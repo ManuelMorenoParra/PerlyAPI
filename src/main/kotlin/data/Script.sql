@@ -54,12 +54,11 @@ CREATE TABLE likes (
 );
 
 -- 5. Tabla Comentarios
--- Sincronizada con tu DAO: Cambiado 'contenido' por 'texto' para que coincida con it[Comentarios.texto]
 CREATE TABLE comentarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_comentario INT AUTO_INCREMENT PRIMARY KEY,
     id_publicacion INT NOT NULL,
     id_usuario INT NOT NULL,
-    texto TEXT NOT NULL, 
+    texto TEXT NOT NULL,
     fecha DATETIME NOT NULL,
     CONSTRAINT fk_com_publicacion FOREIGN KEY (id_publicacion) REFERENCES publicaciones(id) ON DELETE CASCADE,
     CONSTRAINT fk_com_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE

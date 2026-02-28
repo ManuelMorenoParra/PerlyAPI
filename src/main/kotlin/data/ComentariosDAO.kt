@@ -16,9 +16,8 @@ object ComentariosDAO {
         }
 
     fun obtenerPorPublicacion(idPub: Int): List<ComentariosDTO> = transaction {
-            // Hacemos JOIN con Usuarios para obtener nombre y avatar
+            // Al añadir las .references() en el objeto Table, este JOIN ya no fallará
             (Comentarios innerJoin Usuarios)
-                .slice(Comentarios.columns + Usuarios.nombre + Usuarios.avatar)
                 .select { Comentarios.idPublicacion eq idPub }
                 .map {
                     ComentariosDTO(

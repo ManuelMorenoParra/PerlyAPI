@@ -18,15 +18,21 @@ object BloqueosDAO {
     }
 
     fun obtenerBloqueadosPorUsuario(idUser: Int): List<BloqueosDTO> = transaction {
-        Bloqueos.selectAll().where { Bloqueos.idBloqueador eq idUser }.map {
-            BloqueosDTO(
-                id = it[Bloqueos.id],
-                idBloqueador = it[Bloqueos.idBloqueador],
-                idBloqueado = it[Bloqueos.idBloqueado],
-                tipo = it[Bloqueos.tipo],
-                fecha = it[Bloqueos.fecha].toString()
-            )
-        }
+        // Unimos la tabla Bloqueos con Usuarios donde Bloqueos.idBloqueado == Usuarios.id
+        (Bloqueos innerJoin Usuarios)
+            .select { Bloqueos.idBloqueador eq idUser }
+            .map {
+                BloqueosDTO(
+                    id = it[Bloqueos.id],
+                    idBloqueador = it[Bloqueos.idBloqueador],
+                    idBloqueado = it[Bloqueos.idBloqueado],
+                    tipo = it[Bloqueos.tipo],
+                    fecha = it[Bloqueos.fecha].toString(),
+                    // Extraemos los datos de la tabla Usuarios
+                    name = it[Usuarios.nombre], // o Usuarios.username, como lo tengas
+                    avatar = it[Usuarios.avatar]
+                )
+            }
     }
 
     fun eliminarBloqueo(idBloqueador: Int, idBloqueado: Int, tipo: String): Boolean = transaction {

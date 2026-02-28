@@ -30,8 +30,10 @@ fun Route.bloqueosRouting() {
         }
 
         delete("/eliminar") {
-            val bloqueador = call.request.queryParameters["bloqueador"]?.toIntOrNull()
-            val bloqueado = call.request.queryParameters["bloqueado"]?.toIntOrNull()
+            val bloqueador = call.parameters["bloqueador"]?.toIntOrNull() // Cambiado a parameters para ser más flexible
+                ?: call.request.queryParameters["bloqueador"]?.toIntOrNull()
+            val bloqueado = call.parameters["bloqueado"]?.toIntOrNull()
+                ?: call.request.queryParameters["bloqueado"]?.toIntOrNull()
             val tipo = call.request.queryParameters["tipo"] ?: "block"
 
             if (bloqueador == null || bloqueado == null) {
@@ -39,7 +41,8 @@ fun Route.bloqueosRouting() {
             }
 
             if (service.eliminarBloqueo(bloqueador, bloqueado, tipo)) {
-                call.respond(HttpStatusCode.OK, "Restricción eliminada")
+                // Devolvemos un JSON en lugar de texto plano para que Angular no se líe
+                call.respond(HttpStatusCode.OK, mapOf("message" to "Restricción eliminada"))
             } else {
                 call.respond(HttpStatusCode.NotFound, "No se encontró el bloqueo")
             }
